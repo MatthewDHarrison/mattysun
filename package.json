@@ -1,0 +1,9 @@
+{
+  "name": "mattysun",
+  "version": "1.0.0",
+  "description": "Website for Matty Sun",
+  "main": "index.js",
+  "repository": "git@github.com:MatthewDHarrison/mattysun.git",
+  "author": "Matthew Harrison <madoha5812@gmail.com>",
+  "license": "MIT"
+}

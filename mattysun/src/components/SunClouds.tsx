@@ -7,16 +7,18 @@ import { Suspense } from 'react'
 import { Model } from './Model'
 import { Environment } from '@react-three/drei'
 import { Box, Container, Typography } from '@mui/material'
+import { MattyText } from './MattyText'
+import * as THREE from 'three'
 
 export const SunClouds = () => {
 
 
-
-
   return (
     <Canvas dpr={[1, 2]}>
-      {/* <CameraControls minPolarAngle={0} maxPolarAngle={Math.PI / 1.6} /> */}
+      <ambientLight intensity={0.5} />
+      <CameraControls minPolarAngle={0} maxPolarAngle={Math.PI / 1.6} />
       <Model />
+      <MattyText />
 
     </Canvas>
   )

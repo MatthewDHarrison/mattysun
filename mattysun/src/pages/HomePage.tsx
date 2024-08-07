@@ -22,11 +22,6 @@ export const HomePage = () => {
 
         <SunClouds />
       </Box>
-      <Box position="absolute" sx={{ left: "50%", top: '50%', transform: "translate(-50%, 0)" }} alignContent="center">
-        <Typography variant="h1">Matty Sun
-
-        </Typography>
-      </Box>
       <Box display="inline-flex" sx={{ mb: 3 }}>
         {LINKS.map((link, index) => (
           <Box display="inline-flex">

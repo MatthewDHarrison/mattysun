@@ -11,15 +11,13 @@ import { MattyText } from './MattyText'
 import * as THREE from 'three'
 
 export const SunClouds = () => {
-
-
   return (
     <Canvas dpr={[1, 2]}>
-      <ambientLight intensity={0.5} />
-      <CameraControls minPolarAngle={0} maxPolarAngle={Math.PI / 1.6} />
-      <Model />
+      <ambientLight intensity={0.7} />
+      <Suspense fallback={'Loading'}>
+        <Model />
+      </Suspense>
       <MattyText />
-
     </Canvas>
   )
 }

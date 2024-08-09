@@ -7,7 +7,7 @@ import { CssBaseline } from '@mui/material'
 
 function App() {
   return (
-    <div>
+    <div className='App'>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <HomePage />

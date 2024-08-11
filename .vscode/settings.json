@@ -10,7 +10,12 @@
   "files.autoSave": "onFocusChange", // optional but recommended
   "vs-code-prettier-eslint.prettierLast": false, // set as "true" to run 'prettier' last not first
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "typescript.tsdk": "./mattysun/mattysun/node_modules/typescript/lib",
-  "eslint.workingDirectories": [ "./mattysun/mattysun/src" ],
-  "eslint.validate": [ "javascript", "javascriptreact", "html", "typescriptreact" ],
+  "typescript.tsdk": "./mattysun/node_modules/typescript/lib",
+  "eslint.workingDirectories": ["./mattysun/src"],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "html",
+    "typescriptreact"
+  ]
 }

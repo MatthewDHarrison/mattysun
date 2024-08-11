@@ -26,6 +26,7 @@ export default [
   {
     rules: {
       "react/no-unknown-property": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
     },
   },
 ];

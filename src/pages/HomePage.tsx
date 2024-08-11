@@ -1,47 +1,47 @@
-import React from 'react'
-import { Box, Link } from '@mui/material'
-import { SunClouds } from '../components/SunClouds'
+import React from "react";
+import { Box, Link } from "@mui/material";
+import { SunClouds } from "../components/SunClouds";
 import {
   Instagram,
   Email,
   Apple,
   GraphicEq,
   MusicNote,
-} from '@mui/icons-material'
+} from "@mui/icons-material";
 
 const LINKS = [
   {
-    name: 'Instagram',
-    href: 'https://www.instagram.com/matty_sun/',
+    name: "Instagram",
+    href: "https://www.instagram.com/matty_sun/",
     icon: <Instagram />,
   },
   {
-    name: 'Spotify',
-    href: 'https://open.spotify.com/artist/5NkTV3veGmA5fN7wEWG0sE?si=3E7njdDjTp2L707CxmqS7A',
+    name: "Spotify",
+    href: "https://open.spotify.com/artist/5NkTV3veGmA5fN7wEWG0sE?si=3E7njdDjTp2L707CxmqS7A",
     icon: <GraphicEq />,
   },
   {
-    name: 'Apple Music',
-    href: 'https://music.apple.com/au/artist/matty-sun/1454097545',
+    name: "Apple Music",
+    href: "https://music.apple.com/au/artist/matty-sun/1454097545",
     icon: <Apple />,
   },
   {
-    name: 'TikTok',
-    href: 'https://www.tiktok.com/@matty_sunshine',
+    name: "TikTok",
+    href: "https://www.tiktok.com/@matty_sunshine",
     icon: <MusicNote />,
   },
   {
-    name: 'Email',
-    href: 'mailto:matty@mattysun.com',
+    name: "Email",
+    href: "mailto:matty@mattysun.com",
     icon: <Email />,
   },
-]
+];
 export const HomePage = () => {
-  const width = window.innerWidth
+  const width = window.innerWidth;
   return (
     <>
       <Box
-        height="100vh"
+        height={"100vh"}
         width="100vw"
         position="relative"
         display="flex"
@@ -52,13 +52,14 @@ export const HomePage = () => {
         <Box zIndex={1} position="absolute" height="100vh" width="100%">
           <SunClouds />
         </Box>
-        <Box zIndex={3} display="inline-flex" sx={{ mb: 3 }}>
+        <Box zIndex={3} display="inline-flex" sx={{ mb: width < 800 ? 10 : 3 }}>
           {LINKS.map((link, index) => (
             <Box display="inline-flex" key={link.name}>
               <Box
                 display="inline-flex"
                 gap={1}
                 onClick={() => (window.location.href = link.href)}
+                justifyItems="center"
               >
                 {link.icon}
 
@@ -68,7 +69,7 @@ export const HomePage = () => {
                     key={link.name}
                     href={link.href}
                     underline="hover"
-                    sx={{ display: 'block' }}
+                    sx={{ display: "block" }}
                   >
                     {link.name}
                   </Link>
@@ -78,7 +79,7 @@ export const HomePage = () => {
               {index < LINKS.length - 1 && (
                 <Box
                   height="100%"
-                  sx={{ width: '2px', mx: 3, bgcolor: '#fff' }}
+                  sx={{ width: "2px", mx: 3, bgcolor: "#fff" }}
                 />
               )}
             </Box>
@@ -86,5 +87,5 @@ export const HomePage = () => {
         </Box>
       </Box>
     </>
-  )
-}
+  );
+};

@@ -18,9 +18,10 @@ interface ISunCloudsProps {
 
 export const Model = ({ width }: ISunCloudsProps) => {
   const cameraFinalPos = width < 800 ? 50 : 40;
+  const cameraStartPos = width < 800 ? 70 : 60;
   const { camera } = useThree();
 
-  camera.position.set(0, 0, 60); // Set position like this
+  camera.position.set(0, 0, cameraStartPos); // Set position like this
   camera.rotateX(deg2Rad(180)); // Rotate like this
   camera.lookAt(new THREE.Vector3(0, 0, 0)); // Set look at coordinate like this
   camera.layers.enable(1);
@@ -31,7 +32,7 @@ export const Model = ({ width }: ISunCloudsProps) => {
   });
   const cloud1 = useRef<THREE.Group<THREE.Object3DEventMap>>(null!);
   const cloud2 = useRef<THREE.Group<THREE.Object3DEventMap>>(null!);
-  const cameraRef = useRef(60);
+  const cameraRef = useRef(cameraStartPos);
 
   const moveSpeedRef = useRef(10);
   const cameraMoveSpeedRef = useRef(13);

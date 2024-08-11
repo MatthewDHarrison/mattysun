@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Link } from "@mui/material";
-import { SunClouds } from "../components/SunClouds";
+import { Scene } from "../components/SunClouds";
 import {
   Instagram,
   Email,
@@ -50,7 +50,7 @@ export const HomePage = () => {
         padding={{ b: 3 }}
       >
         <Box zIndex={1} position="absolute" height="100vh" width="100%">
-          <SunClouds />
+          <Scene width={width} />
         </Box>
         <Box zIndex={3} display="inline-flex" sx={{ mb: width < 800 ? 10 : 3 }}>
           {LINKS.map((link, index) => (

@@ -5,12 +5,16 @@ import { Model } from "./Model";
 import { MattyText } from "./MattyText";
 import { EffectComposer, Noise, Vignette } from "@react-three/postprocessing";
 
-export const SunClouds = () => {
+interface ISceneProps {
+  width: number;
+}
+
+export const Scene = ({ width }: ISceneProps) => {
   return (
     <Canvas dpr={[1, 2]}>
       <ambientLight intensity={0.7} />
       <Suspense fallback={"Loading"}>
-        <Model />
+        <Model width={width} />
       </Suspense>
       <MattyText />
       <EffectComposer>

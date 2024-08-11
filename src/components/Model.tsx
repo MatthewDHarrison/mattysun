@@ -12,7 +12,12 @@ const deg2Rad = (deg: number) => {
   return deg * (Math.PI / 180);
 };
 
-export const Model = () => {
+interface ISunCloudsProps {
+  width: number;
+}
+
+export const Model = ({ width }: ISunCloudsProps) => {
+  const cameraFinalPos = width < 800 ? 50 : 40;
   const { camera } = useThree();
 
   camera.position.set(0, 0, 60); // Set position like this
@@ -21,7 +26,9 @@ export const Model = () => {
   camera.layers.enable(1);
 
   const { nodes } = useGLTF("/models/scene-v1.glb");
-  const cloudMaterial = new THREE.MeshStandardMaterial({ color: "white", opacity: 0.5, transparent: false });
+  const cloudMaterial = new THREE.MeshStandardMaterial({
+    color: "white",
+  });
   const cloud1 = useRef<THREE.Group<THREE.Object3DEventMap>>(null!);
   const cloud2 = useRef<THREE.Group<THREE.Object3DEventMap>>(null!);
   const cameraRef = useRef(60);
@@ -43,9 +50,9 @@ export const Model = () => {
     const dist = delta * 4.2 * moveSpeedRef.current;
     moveSpeedRef.current = Math.max(moveSpeedRef.current * 0.99, 3);
 
-    const cameraDist = delta * 2.2 * cameraMoveSpeedRef.current;
+    const cameraDist = delta * 1.8 * cameraMoveSpeedRef.current;
     cameraMoveSpeedRef.current = Math.max(cameraMoveSpeedRef.current * 0.97);
-    if (cameraRef.current > 40) {
+    if (cameraRef.current > cameraFinalPos) {
       cameraRef.current = cameraRef.current - cameraDist;
       state.camera.position.lerp(
         new THREE.Vector3(0, 0, cameraRef.current),
@@ -91,7 +98,6 @@ export const Model = () => {
           material={cloudMaterial}
           scale={2}
           rotation={[deg2Rad(-86), deg2Rad(10), deg2Rad(-10)]}
-          
           layers={0}
         />
       </group>
@@ -101,17 +107,15 @@ export const Model = () => {
           material={cloudMaterial}
           scale={2}
           rotation={[deg2Rad(-86), deg2Rad(10), deg2Rad(-10)]}
-          
           layers={0}
         />
       </group>
-      <group   position={[0, 0, -30]} rotation={[0, deg2Rad(-20), deg2Rad(10)]}>
+      <group position={[0, 0, -30]} rotation={[0, deg2Rad(-20), deg2Rad(10)]}>
         <mesh
           geometry={(nodes.Cloud__0 as THREE.Mesh).geometry}
           material={cloudMaterial}
           scale={3}
           rotation={[deg2Rad(-86), deg2Rad(10), deg2Rad(-10)]}
-         
           layers={0}
         />
       </group>

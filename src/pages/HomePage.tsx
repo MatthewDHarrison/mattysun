@@ -48,6 +48,7 @@ export const HomePage = () => {
         alignItems="end"
         justifyContent="center"
         padding={{ b: 3 }}
+        
       >
         <Box zIndex={1} position="absolute" height="100vh" width="100%">
           <Scene width={width} />

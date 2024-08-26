@@ -1,4 +1,4 @@
-import { IItem, IEffect } from "./general";
+import { IEffect, Item } from "./general";
 import { IMonster } from "./monster";
 
 export enum EncounterType {
@@ -6,7 +6,16 @@ export enum EncounterType {
   Mystery,
 }
 
-type Reward = number;
+export enum RewardType {
+  Coin,
+  Item,
+}
+
+type Reward = {
+  type: RewardType;
+  value: number;
+  item?: Item;
+};
 
 export interface IEncounter {
   name: string;

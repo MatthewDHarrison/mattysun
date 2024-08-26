@@ -1,11 +1,11 @@
-import { Encounter, EncounterType } from "../encounter";
+import { Encounter, EncounterType, RewardType } from "../encounter";
 
 export const encounters: Encounter[] = [
   {
     name: "Goblin Ambush",
     description: "A group of goblins ambushes you!",
     difficulty: 1,
-    rewards: [10],
+    rewards: [{ type: RewardType.Coin, value: 10 }],
     type: EncounterType.Combat,
     enemies: [
       {
@@ -23,7 +23,7 @@ export const encounters: Encounter[] = [
     name: "Orc Raiding Party",
     description: "A group of orcs is raiding the area!",
     difficulty: 2,
-    rewards: [20],
+    rewards: [{ type: RewardType.Coin, value: 15 }],
     type: EncounterType.Combat,
     enemies: [
       {
@@ -40,7 +40,7 @@ export const encounters: Encounter[] = [
     name: "Troll Attack",
     description: "A troll is attacking the road!",
     difficulty: 3,
-    rewards: [30],
+    rewards: [{ type: RewardType.Coin, value: 20 }],
     type: EncounterType.Combat,
     enemies: [
       {

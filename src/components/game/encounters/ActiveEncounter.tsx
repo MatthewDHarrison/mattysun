@@ -4,14 +4,15 @@ import {
   EncounterType,
   ICombatEncounter,
   IMysteryEncounter,
-} from "../../game/encounter";
+} from "../../../game/encounter";
 import React from "react";
-import { ICharacter } from "../../game/character";
-import { EffectType, ItemType, IWeapon } from "../../game/general";
-import { useActiveEncounter } from "../../game/encounters.ts/encounter.state";
+import { ICharacter } from "../../../game/character";
+import { EffectType, ItemType, IWeapon } from "../../../game/general";
+import { useEncounterState } from "../../../game/encounters.ts/encounter.state";
 import { useMount } from "react-use";
-import { getDiceString } from "../../game/dice";
-import { ItemIcon } from "../../game/content/ItemIcon";
+import { getDiceString } from "../../../game/dice";
+import { ItemIcon } from "../../../game/content/ItemIcon";
+import { EncounterEndModal } from "./EncounterEndModal";
 
 interface IEncounterProps {
   encounter: Encounter;
@@ -21,7 +22,7 @@ interface IEncounterProps {
   >;
 }
 
-const style = {
+export const modalStyle = {
   position: "absolute" as const,
   top: "50%",
   left: "50%",
@@ -39,8 +40,8 @@ export const ActiveEncounter = ({
   character,
   setCharacter,
 }: IEncounterProps) => {
-  const { activeEncounter, startEncounter, endEncounter, applyEffect } =
-    useActiveEncounter();
+  const { encounterState, startEncounter, endEncounter, applyEffect } =
+    useEncounterState();
   const [activeWeapon, setActiveWeapon] = React.useState<IWeapon | null>(null);
   const [showActiveWeaponModal, setShowActiveWeaponModal] =
     React.useState(false);
@@ -72,30 +73,10 @@ export const ActiveEncounter = ({
     startEncounter(encounter);
   });
 
-  if (!activeEncounter) {
+  if (!encounterState) {
     return null;
   }
 
-  if (
-    activeEncounter.type === EncounterType.Combat &&
-    (activeEncounter as ICombatEncounter).enemies.length === 0
-  ) {
-    endEncounter(setCharacter);
-    return (
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        sx={{ border: "4px solid white", borderRadius: 2 }}
-        padding={5}
-        width={700}
-      >
-        <Typography variant="game" fontSize={40}>
-          You won!
-        </Typography>
-      </Box>
-    );
-  }
   return (
     <Box
       display="flex"
@@ -107,13 +88,13 @@ export const ActiveEncounter = ({
     >
       <Box display="flex" flexDirection="column" alignItems="center">
         <Typography variant="game" fontSize={40}>
-          {activeEncounter.name}
+          {encounterState.encounter.name}
         </Typography>
         <Typography variant="game" fontSize={20}>
-          {activeEncounter.description}
+          {encounterState.encounter.description}
         </Typography>
       </Box>
-      {activeEncounter.type === EncounterType.Combat && (
+      {encounterState.encounter.type === EncounterType.Combat && (
         <Box
           display="flex"
           flexDirection="row"
@@ -121,25 +102,27 @@ export const ActiveEncounter = ({
           gap={2}
           marginTop={3}
         >
-          {(activeEncounter as ICombatEncounter).enemies.map((enemy, index) => (
-            <Box
-              key={index}
-              padding={2}
-              sx={{ border: "1px solid white" }}
-              width={200}
-              height="100%"
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-            >
-              <Typography alignSelf="center" variant="game" fontSize={24}>
-                {enemy.name}
-              </Typography>
-              <Typography alignSelf="center" variant="game" fontSize={16}>
-                {enemy.hp}/{enemy.maxHp}
-              </Typography>
-            </Box>
-          ))}
+          {(encounterState.encounter as ICombatEncounter).enemies.map(
+            (enemy, index) => (
+              <Box
+                key={index}
+                padding={2}
+                sx={{ border: "1px solid white" }}
+                width={200}
+                height="100%"
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+              >
+                <Typography alignSelf="center" variant="game" fontSize={24}>
+                  {enemy.name}
+                </Typography>
+                <Typography alignSelf="center" variant="game" fontSize={16}>
+                  {enemy.hp}/{enemy.maxHp}
+                </Typography>
+              </Box>
+            ),
+          )}
         </Box>
       )}
       <Box
@@ -178,7 +161,6 @@ export const ActiveEncounter = ({
       <Modal
         open={showActiveWeaponModal}
         onClose={() => setShowActiveWeaponModal(false)}
-        center
       >
         <Box
           display="flex"
@@ -186,7 +168,7 @@ export const ActiveEncounter = ({
           alignItems="start"
           justifyContent="center"
           gap={2}
-          sx={style}
+          sx={modalStyle}
           padding={5}
         >
           <Typography alignSelf="center" variant="game" fontSize={30}>
@@ -222,6 +204,10 @@ export const ActiveEncounter = ({
           </Box>
         </Box>
       </Modal>
+      <EncounterEndModal
+        encounterState={encounterState}
+        onClose={() => endEncounter(setCharacter)}
+      />
     </Box>
   );
 };

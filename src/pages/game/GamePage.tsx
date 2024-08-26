@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Box, Link, Typography } from "@mui/material";
 import { Overlay } from "../../components/game/Overlay";
-import { Encounters } from "../../components/game/Encounters";
+import { Encounters } from "../../components/game/encounters/Encounters";
 import { encounters } from "../../game/content/encounters";
 import { useCharacter } from "../../game/character";
 import { useGameState } from "../../game/state";

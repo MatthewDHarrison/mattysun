@@ -1,13 +1,7 @@
-import {
-  Encounter,
-  EncounterType,
-  IEncounter,
-  IMysteryEncounter,
-} from "../../game/encounter";
-import { Box, Typography } from "@mui/material";
+import { Encounter } from "../../../game/encounter";
 import React from "react";
 import { ActiveEncounter } from "./ActiveEncounter";
-import { ICharacter } from "../../game/character";
+import { ICharacter } from "../../../game/character";
 
 interface IEncountersProps {
   encounters: Encounter[];

@@ -1,13 +1,23 @@
 import { useState } from "react";
-import { EncounterType, ICombatEncounter, IEncounter } from "../encounter";
-import { EffectType, IEffect } from "../general";
+import {
+  EncounterType,
+  ICombatEncounter,
+  IEncounter,
+  RewardType,
+} from "../encounter";
+import { EffectType, IEffect, Item } from "../general";
 import { ICharacter } from "../character";
 import { rollDice } from "../dice";
+
+export interface IEncounterState {
+  encounter: IEncounter;
+  isOver: boolean;
+}
 
 export const applyEffectToEncounter = (
   encounter: IEncounter,
   effect: IEffect,
-  setEncounter: (encounter: IEncounter) => void,
+  setEncounter: (encounterState: IEncounterState) => void,
   target?: "self" | "enemies" | "all" | number,
   character?: ICharacter,
 ) => {
@@ -30,7 +40,8 @@ export const applyEffectToEncounter = (
         });
         combatEncounter.enemies = newEnemies.filter((enemy) => enemy !== null);
         setEncounter({
-          ...combatEncounter,
+          encounter: combatEncounter,
+          isOver: combatEncounter.enemies.length === 0,
         });
       }
     }
@@ -45,23 +56,24 @@ export const applyEffectToEncounter = (
           combatEncounter.enemies.splice(target, 1);
         }
         setEncounter({
-          ...combatEncounter,
+          encounter: combatEncounter,
+          isOver: combatEncounter.enemies.length === 0,
         });
       }
     }
   }
 };
 
-export const useActiveEncounter = () => {
-  const [activeEncounter, setActiveEncounter] = useState<IEncounter | null>(
+export const useEncounterState = () => {
+  const [encounterState, setEncounterState] = useState<IEncounterState | null>(
     null,
   );
 
   const startEncounter = (encounter: IEncounter) => {
-    setActiveEncounter({
-      ...encounter,
+    setEncounterState({
+      encounter: encounter,
+      isOver: false,
     });
-    setActiveEncounter(encounter);
   };
 
   const applyEffect = (
@@ -69,11 +81,11 @@ export const useActiveEncounter = () => {
     target?: "self" | "enemies" | "all" | number,
     character?: ICharacter,
   ) => {
-    if (activeEncounter) {
+    if (encounterState) {
       applyEffectToEncounter(
-        activeEncounter,
+        encounterState.encounter,
         effect,
-        setActiveEncounter,
+        setEncounterState,
         target,
         character,
       );
@@ -89,20 +101,34 @@ export const useActiveEncounter = () => {
       if (!prev) {
         return prev;
       }
-      const newCoins = activeEncounter?.rewards.reduce((acc, reward) => {
-        if (typeof reward === "number") {
-          return acc + (reward as number);
-        }
-        return acc;
-      }, 0);
+      const newCoins = encounterState?.encounter.rewards.reduce(
+        (acc, reward) => {
+          if (reward.type === RewardType.Coin) {
+            return acc + reward.value;
+          }
+          return acc;
+        },
+        0,
+      );
+      // const newItems: Item[] = encounterState?.encounter.rewards.reduce(
+      //   (acc, reward) => {
+      //     if (reward.type === RewardType.Item && reward.item) {
+      //       return [...acc, reward.item as Item];
+      //     }
+      //     return acc;
+      //   },
+      //   [] as Item[],
+      // );
+      const newItems: Item[] = [];
 
       return {
         ...prev,
         coin: prev.coin + (newCoins || 0),
+        items: [...prev.items, ...newItems],
       };
     });
-    setActiveEncounter(null);
+    setEncounterState(null);
   };
 
-  return { activeEncounter, startEncounter, endEncounter, applyEffect };
+  return { encounterState, startEncounter, endEncounter, applyEffect };
 };

@@ -3,11 +3,12 @@ import {
   EncounterType,
   ICombatEncounter,
   IEncounter,
+  IOption,
   RewardType,
 } from "../encounter";
 import { EffectType, IEffect, Item } from "../general";
-import { ICharacter } from "../character";
-import { rollDice } from "../dice";
+import { ICharacter } from "../character/character";
+import { DiceType, rollDice } from "../dice";
 
 export interface IEncounterState {
   encounter: IEncounter;
@@ -18,7 +19,6 @@ export const applyEffectToEncounter = (
   encounter: IEncounter,
   effect: IEffect,
   setEncounter: (encounterState: IEncounterState) => void,
-  target?: "self" | "enemies" | "all" | number,
   character?: ICharacter,
 ) => {
   const totalValue =
@@ -26,10 +26,10 @@ export const applyEffectToEncounter = (
 
   if (encounter.type === EncounterType.Combat) {
     const combatEncounter = encounter as ICombatEncounter;
-    if (target === "self") {
+    if (effect.target === "self") {
       // apply effect to self
     }
-    if (target === "enemies") {
+    if (effect.target === "enemies") {
       if (effect.type === EffectType.Health) {
         const newEnemies = combatEncounter.enemies.map((enemy) => {
           enemy.hp -= totalValue;
@@ -45,21 +45,27 @@ export const applyEffectToEncounter = (
         });
       }
     }
-    if (target === "all") {
+    if (effect.target === "all") {
       // apply effect to all
     }
-    if (typeof target === "number") {
-      const enemy = combatEncounter.enemies[target];
-      if (effect.type === EffectType.Health) {
-        enemy.hp -= totalValue;
-        if (enemy.hp <= 0) {
-          combatEncounter.enemies.splice(target, 1);
-        }
-        setEncounter({
-          encounter: combatEncounter,
-          isOver: combatEncounter.enemies.length === 0,
-        });
+    const enemy = combatEncounter.enemies.find(
+      (enemy) => enemy.id === effect.target,
+    );
+    if (!enemy) {
+      console.error("Enemy not found", effect.target);
+      return;
+    }
+    if (effect.type === EffectType.Health) {
+      enemy.hp -= totalValue;
+      if (enemy.hp <= 0) {
+        combatEncounter.enemies = combatEncounter.enemies.filter(
+          (e) => e.id !== enemy.id,
+        );
       }
+      setEncounter({
+        encounter: combatEncounter,
+        isOver: combatEncounter.enemies.length === 0,
+      });
     }
   }
 };
@@ -76,19 +82,36 @@ export const useEncounterState = () => {
     });
   };
 
-  const applyEffect = (
-    effect: IEffect,
-    target?: "self" | "enemies" | "all" | number,
-    character?: ICharacter,
-  ) => {
+  const doOption = (option: IOption, character?: ICharacter) => {
     if (encounterState) {
-      applyEffectToEncounter(
-        encounterState.encounter,
-        effect,
-        setEncounterState,
-        target,
-        character,
-      );
+      if (option.stat && option.difficulty) {
+        // roll dice
+        const roll = rollDice({
+          dice: [DiceType.D6, DiceType.D6],
+          modifier: character?.stats[option.stat] || 0,
+        });
+        console.log("Roll", roll);
+        console.log("Difficulty", option.difficulty);
+        if (roll < option.difficulty) {
+          option.onFail.forEach((effect) => {
+            applyEffectToEncounter(
+              encounterState.encounter,
+              effect,
+              setEncounterState,
+              character,
+            );
+          });
+          return;
+        }
+        option.onSuccess.forEach((effect) => {
+          applyEffectToEncounter(
+            encounterState.encounter,
+            effect,
+            setEncounterState,
+            character,
+          );
+        });
+      }
     }
   };
 
@@ -121,6 +144,7 @@ export const useEncounterState = () => {
       // );
       const newItems: Item[] = [];
 
+      console.log("New coins", newCoins);
       return {
         ...prev,
         coin: prev.coin + (newCoins || 0),
@@ -130,5 +154,10 @@ export const useEncounterState = () => {
     setEncounterState(null);
   };
 
-  return { encounterState, startEncounter, endEncounter, applyEffect };
+  return {
+    encounterState,
+    startEncounter,
+    endEncounter,
+    doOption,
+  };
 };

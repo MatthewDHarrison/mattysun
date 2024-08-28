@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ICharacter, useCharacter } from "../../../game/character";
+import { ICharacter, useCharacter } from "../../../game/character/character";
 import { Box, Button, Input, Typography } from "@mui/material";
 import styled from "@emotion/styled";
 import {
@@ -42,19 +42,29 @@ const NameInput = styled.input`
 
 interface ICharacterCreationProps {
   updateGameState: (newGameState: IGameState) => void;
-  setCharacter: (character: ICharacter) => void;
 }
 
 export const CharacterCreation = ({
   updateGameState,
-  setCharacter,
 }: ICharacterCreationProps) => {
   const [name, setName] = useState<string>("");
   const [step, setStep] = useState<"name" | "abilities" | "items" | "end">(
     "name",
   );
-  const { character, createCharacter } = useCharacter();
-  const [abilities, setAbilities] = useState<number[] | null>(null);
+  const { character, createCharacter, setCharacter } = useCharacter();
+  const [characterState, setCharacterState] = useState<ICharacter>({
+    name: "",
+    hp: 30,
+    stats: {
+      strength: 0,
+      agility: 0,
+      presence: 0,
+      toughness: 0,
+    },
+    items: [],
+    coin: 0,
+  });
+  const [abilities, setAbilities] = useState<number[]>([0, 0, 0, 0]);
   const [chosenItem, setChosenItem] = useState<Item | null>(null);
   const [abilitiesValid, setAbilitiesValid] = useState<boolean>(false);
   const [itemOptions, setItemOptions] = useState<Item[]>([]);
@@ -65,34 +75,37 @@ export const CharacterCreation = ({
   };
 
   const setCharacterAbilities = (abilities: number[]) => {
-    if (character) {
-      setCharacter({
-        ...character,
-        strength: abilities[0],
-        agility: abilities[1],
-        presence: abilities[2],
-        toughness: abilities[3],
-      });
+    if (characterState) {
+      setCharacterState((prev: ICharacter) => ({
+        ...prev,
+        stats: {
+          strength: abilities[0],
+          agility: abilities[1],
+          presence: abilities[2],
+          toughness: abilities[3],
+        },
+      }));
     }
   };
 
   const setCharacterItems = (items: Item[]) => {
-    if (character) {
-      setCharacter({
-        ...character,
+    if (characterState) {
+      setCharacterState((prev: ICharacter) => ({
+        ...prev,
         items: items,
-      });
+      }));
     }
   };
 
   useEffect(() => {
-    if (character) {
-      setAbilities([
-        character.strength,
-        character.agility,
-        character.presence,
-        character.toughness,
-      ]);
+    if (characterState) {
+      setCharacter(characterState);
+    }
+  }, [characterState]);
+
+  useEffect(() => {
+    if (character?.items.length && character?.items.length > 0) {
+      updateGameState({ location: "intro" });
     }
   }, [character]);
 
@@ -144,7 +157,6 @@ export const CharacterCreation = ({
         return;
       }
       setCharacterItems([...startingGear, chosenItem]);
-      updateGameState({ location: "intro" });
       setStep("end");
       return;
     }

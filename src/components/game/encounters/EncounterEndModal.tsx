@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Box, Modal, Typography } from "@mui/material";
-import { IEncounterState } from "../../../game/encounters.ts/encounter.state";
+import { IEncounterState } from "../../../game/encounters/encounter.state";
 import { modalStyle } from "./ActiveEncounter";
 import { ItemIcon } from "../../../game/content/ItemIcon";
 import { IItem } from "../../../game/general";

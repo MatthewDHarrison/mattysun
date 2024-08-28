@@ -1,3 +1,4 @@
+import { IStats } from "./character/character";
 import { IDice } from "./dice";
 
 export enum ItemType {
@@ -8,6 +9,8 @@ export enum ItemType {
   Misc,
 }
 
+export type Stat = keyof IStats;
+
 export interface IItem {
   name: string;
   description: string;
@@ -15,9 +18,14 @@ export interface IItem {
   type: ItemType;
 }
 
+export enum RangeType {
+  Melee = "melee",
+  Ranged = "ranged",
+}
+
 export interface IWeapon extends IItem {
   damage: IDice;
-  range: "melee" | "ranged";
+  range: RangeType;
   tag?: string;
 }
 
@@ -33,7 +41,6 @@ export interface IScroll extends IItem {
   spell: string;
   damage?: IDice;
   effect?: IEffect;
-  target?: string;
 }
 
 export type Item = IWeapon | IArmor | IConsumable | IScroll;
@@ -61,4 +68,5 @@ export interface IEffect {
   value?: number;
   dice?: IDice;
   status?: StatusType;
+  target: string | "self" | "enemies" | "all";
 }

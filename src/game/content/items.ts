@@ -6,6 +6,7 @@ import {
   StatusType,
   IItem,
   Item,
+  RangeType,
 } from "../general";
 import { DiceType, IDice } from "../dice";
 
@@ -16,7 +17,7 @@ export const startingGear: Item[] = [
     value: 5,
     type: ItemType.Weapon,
     damage: { dice: [DiceType.D4], modifier: 0 },
-    range: "melee",
+    range: RangeType.Melee,
   },
   {
     name: "Leather Sling",
@@ -24,21 +25,21 @@ export const startingGear: Item[] = [
     value: 3,
     type: ItemType.Weapon,
     damage: { dice: [DiceType.D4], modifier: 0 },
-    range: "ranged",
+    range: RangeType.Ranged,
   },
   {
     name: "Questionable Jerky",
     description: "Not sure what it's made of, but it's protein.",
     value: 1,
     type: ItemType.Consumable,
-    effect: { type: EffectType.Health, value: 1 },
+    effect: { type: EffectType.Health, value: 1, target: "self" },
   },
   {
     name: "Bruised Apple",
     description: "It's seen better days. So have you.",
     value: 1,
     type: ItemType.Consumable,
-    effect: { type: EffectType.Health, value: 1 },
+    effect: { type: EffectType.Health, value: 1, target: "self" },
   },
 ];
 
@@ -49,7 +50,7 @@ export const meleeWeapons: IWeapon[] = [
     value: 10,
     type: ItemType.Weapon,
     damage: { dice: [DiceType.D8], modifier: 0 },
-    range: "melee",
+    range: RangeType.Melee,
   },
   {
     name: "Bloody Maul",
@@ -57,7 +58,7 @@ export const meleeWeapons: IWeapon[] = [
     value: 15,
     type: ItemType.Weapon,
     damage: { dice: [DiceType.D6], modifier: 1 },
-    range: "melee",
+    range: RangeType.Melee,
   },
   {
     name: "Jagged Spear",
@@ -65,7 +66,7 @@ export const meleeWeapons: IWeapon[] = [
     value: 5,
     type: ItemType.Weapon,
     damage: { dice: [DiceType.D10], modifier: -1 },
-    range: "melee",
+    range: RangeType.Melee,
   },
   {
     name: "Knight's Longsword",
@@ -73,7 +74,7 @@ export const meleeWeapons: IWeapon[] = [
     value: 20,
     type: ItemType.Weapon,
     damage: { dice: [DiceType.D8], modifier: 2 },
-    range: "melee",
+    range: RangeType.Melee,
   },
 ];
 
@@ -84,7 +85,7 @@ export const rangedWeapons: IWeapon[] = [
     value: 15,
     type: ItemType.Weapon,
     damage: { dice: [DiceType.D6], modifier: 1 },
-    range: "ranged",
+    range: RangeType.Ranged,
   },
   {
     name: "Bandit's Crossbow",
@@ -92,7 +93,7 @@ export const rangedWeapons: IWeapon[] = [
     value: 20,
     type: ItemType.Weapon,
     damage: { dice: [DiceType.D8], modifier: 1 },
-    range: "ranged",
+    range: RangeType.Ranged,
   },
   {
     name: "Rusty Pistol",
@@ -100,7 +101,7 @@ export const rangedWeapons: IWeapon[] = [
     value: 10,
     type: ItemType.Weapon,
     damage: { dice: [DiceType.D10], modifier: 1 },
-    range: "ranged",
+    range: RangeType.Ranged,
     tag: "unstable",
   },
   {
@@ -109,7 +110,7 @@ export const rangedWeapons: IWeapon[] = [
     value: 5,
     type: ItemType.Weapon,
     damage: { dice: [DiceType.D4], modifier: -1 },
-    range: "ranged",
+    range: RangeType.Ranged,
   },
 ];
 
@@ -120,8 +121,11 @@ export const scrolls: IScroll[] = [
     value: 10,
     type: ItemType.Scroll,
     spell: "flames",
-    damage: { dice: [DiceType.D12], modifier: 0 },
-    target: "enemies",
+    effect: {
+      type: EffectType.Health,
+      dice: { dice: [DiceType.D12], modifier: 0 },
+      target: "enemies",
+    },
   },
   {
     name: "Blinding Light (scroll)",
@@ -129,8 +133,12 @@ export const scrolls: IScroll[] = [
     value: 10,
     type: ItemType.Scroll,
     spell: "blind",
-    effect: { type: EffectType.Status, value: 3, status: StatusType.Stun },
-    target: "enemies",
+    effect: {
+      type: EffectType.Status,
+      value: 3,
+      status: StatusType.Stun,
+      target: "enemies",
+    },
   },
   {
     name: "Ease Pain (scroll)",
@@ -139,8 +147,7 @@ export const scrolls: IScroll[] = [
     value: 5,
     type: ItemType.Scroll,
     spell: "heal",
-    effect: { type: EffectType.Health, value: 3 },
-    target: "self",
+    effect: { type: EffectType.Health, value: 3, target: "self" },
   },
   {
     name: "Become Shadow (scroll)",
@@ -148,8 +155,12 @@ export const scrolls: IScroll[] = [
     value: 5,
     type: ItemType.Scroll,
     spell: "invisible",
-    effect: { type: EffectType.Status, value: 3, status: StatusType.Invisible },
-    target: "self",
+    effect: {
+      type: EffectType.Status,
+      value: 3,
+      status: StatusType.Invisible,
+      target: "self",
+    },
   },
   {
     name: "Twist Minds (scroll)",
@@ -158,8 +169,12 @@ export const scrolls: IScroll[] = [
     value: 10,
     type: ItemType.Scroll,
     spell: "turn",
-    effect: { type: EffectType.Status, value: 3, status: StatusType.Turned },
-    target: "one",
+    effect: {
+      type: EffectType.Status,
+      value: 3,
+      status: StatusType.Turned,
+      target: "",
+    },
   },
 ];
 

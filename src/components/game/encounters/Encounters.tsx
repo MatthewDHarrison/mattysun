@@ -1,28 +1,47 @@
 import { Encounter } from "../../../game/encounter";
-import React from "react";
+import React, { useEffect } from "react";
 import { ActiveEncounter } from "./ActiveEncounter";
-import { ICharacter } from "../../../game/character";
+import { ICharacter, useCharacter } from "../../../game/character/character";
+import { Box } from "@mui/material";
+import { Overlay } from "../Overlay";
 
 interface IEncountersProps {
   encounters: Encounter[];
-  character: ICharacter;
-  setCharacter: React.Dispatch<
-    React.SetStateAction<ICharacter | null | undefined>
-  >;
 }
 
-export const Encounters = ({
-  encounters,
-  character,
-  setCharacter,
-}: IEncountersProps) => {
+export const Encounters = ({ encounters }: IEncountersProps) => {
   const activeEncounter = encounters[0];
+  const { character, setCharacter } = useCharacter();
+
+  useEffect(() => {
+    console.log("character", character);
+  }, [character]);
 
   return (
-    <ActiveEncounter
-      encounter={activeEncounter}
-      character={character}
-      setCharacter={setCharacter}
-    />
+    <Box
+      height={"100vh"}
+      width="100vw"
+      position="relative"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      padding={{ b: 3 }}
+      backgroundColor="black"
+      zIndex={1}
+    >
+      {character && <Overlay character={character}/>}
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        zIndex={1}
+        width={1200}
+      >
+        <ActiveEncounter
+          encounter={activeEncounter}
+          setCharacter={setCharacter}
+        />
+      </Box>
+    </Box>
   );
 };

@@ -1,4 +1,5 @@
 import { Encounter, EncounterType, RewardType } from "../encounter";
+import { v4 } from "uuid";
 
 export const encounters: Encounter[] = [
   {
@@ -9,10 +10,21 @@ export const encounters: Encounter[] = [
     type: EncounterType.Combat,
     enemies: [
       {
-        name: "Goblin",
+        id: v4(),
+        name: "Gay lil guy",
         hp: 5,
-
         maxHp: 5,
+        defense: 4,
+        morale: 5,
+        damage: { dice: [4], modifier: 0 },
+        special: "None",
+      },
+      {
+        id: v4(),
+        name: "Gay lil guy",
+        hp: 5,
+        maxHp: 5,
+        defense: 4,
         morale: 5,
         damage: { dice: [4], modifier: 0 },
         special: "None",
@@ -27,9 +39,11 @@ export const encounters: Encounter[] = [
     type: EncounterType.Combat,
     enemies: [
       {
+        id: v4(),
         name: "Orc",
         hp: 10,
         maxHp: 10,
+        defense: 6,
         morale: 10,
         damage: { dice: [6], modifier: 0 },
         special: "None",
@@ -44,9 +58,11 @@ export const encounters: Encounter[] = [
     type: EncounterType.Combat,
     enemies: [
       {
+        id: v4(),
         name: "Troll",
         hp: 15,
         maxHp: 15,
+        defense: 4,
         morale: 15,
         damage: { dice: [8], modifier: 0 },
         special: "Regenerates 5 HP per turn",

@@ -1,4 +1,4 @@
-import { IEffect, Item } from "./general";
+import { IEffect, Item, Stat } from "./general";
 import { IMonster } from "./monster";
 
 export enum EncounterType {
@@ -29,13 +29,16 @@ export interface ICombatEncounter extends IEncounter {
   enemies: IMonster[];
 }
 
-export interface IMysteryOption {
+export interface IOption {
   description: string;
-  effects: IEffect[];
+  stat?: Stat;
+  difficulty?: number;
+  onSuccess: IEffect[];
+  onFail: IEffect[];
 }
 
 export interface IMysteryEncounter extends IEncounter {
-  options: IMysteryOption[];
+  options: IOption[];
 }
 
 export type Encounter = ICombatEncounter | IMysteryEncounter;

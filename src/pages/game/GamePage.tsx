@@ -3,7 +3,7 @@ import { Box, Link, Typography } from "@mui/material";
 import { Overlay } from "../../components/game/Overlay";
 import { Encounters } from "../../components/game/encounters/Encounters";
 import { encounters } from "../../game/content/encounters";
-import { useCharacter } from "../../game/character";
+import { useCharacter } from "../../game/character/character";
 import { useGameState } from "../../game/state";
 import { CharacterCreation } from "../../components/game/Character/CharacterCreation";
 import { useMount } from "react-use";
@@ -17,6 +17,7 @@ export const GamePage = () => {
 
   useEffect(() => {
     console.log("gameState", gameState);
+    console.log("character", character);
     if (!gameState) {
       updateGameState({ location: "start" });
     }
@@ -24,6 +25,9 @@ export const GamePage = () => {
 
   return (
     <>
+      {gameState?.location === "dungeon" && (
+        <Encounters encounters={encounters} />
+      )}
       <Box
         height={"100vh"}
         width="100vw"
@@ -37,9 +41,6 @@ export const GamePage = () => {
         zIndex={0}
         key={gameState?.location}
       >
-        {character && gameState?.location === "dungeon" && (
-          <Overlay character={character} />
-        )}
         <Box
           display="flex"
           flexDirection="column"
@@ -47,13 +48,6 @@ export const GamePage = () => {
           zIndex={1}
           width={width > 700 ? 1200 : "100%"}
         >
-          {gameState?.location === "dungeon" && character && (
-            <Encounters
-              encounters={encounters}
-              character={character}
-              setCharacter={setCharacter}
-            />
-          )}
           {gameState?.location === "start" && (
             <Box
               display="flex"
@@ -87,10 +81,7 @@ export const GamePage = () => {
             </Box>
           )}
           {gameState?.location === "characterCreation" && (
-            <CharacterCreation
-              updateGameState={updateGameState}
-              setCharacter={setCharacter}
-            />
+            <CharacterCreation updateGameState={updateGameState} />
           )}
           {gameState?.location === "intro" && (
             <Box

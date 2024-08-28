@@ -4,19 +4,30 @@ import {
   EncounterType,
   ICombatEncounter,
   IMysteryEncounter,
+  IOption,
 } from "../../../game/encounter";
-import React from "react";
-import { ICharacter } from "../../../game/character";
-import { EffectType, ItemType, IWeapon } from "../../../game/general";
-import { useEncounterState } from "../../../game/encounters.ts/encounter.state";
+import React, { act, useEffect } from "react";
+import {
+  ICharacter,
+  IStats,
+  useCharacter,
+  useEquippedItems,
+} from "../../../game/character/character";
+import {
+  EffectType,
+  ItemType,
+  IWeapon,
+  RangeType,
+} from "../../../game/general";
+import { useEncounterState } from "../../../game/encounters/encounter.state";
 import { useMount } from "react-use";
 import { getDiceString } from "../../../game/dice";
 import { ItemIcon } from "../../../game/content/ItemIcon";
 import { EncounterEndModal } from "./EncounterEndModal";
+import { Overlay } from "../Overlay";
 
 interface IEncounterProps {
   encounter: Encounter;
-  character: ICharacter;
   setCharacter: React.Dispatch<
     React.SetStateAction<ICharacter | null | undefined>
   >;
@@ -37,37 +48,90 @@ export const modalStyle = {
 
 export const ActiveEncounter = ({
   encounter,
-  character,
   setCharacter,
 }: IEncounterProps) => {
-  const { encounterState, startEncounter, endEncounter, applyEffect } =
+  const { character } = useCharacter();
+  if (!character) {
+    return null;
+  }
+  const { encounterState, startEncounter, endEncounter, doOption } =
     useEncounterState();
-  const [activeWeapon, setActiveWeapon] = React.useState<IWeapon | null>(null);
+  const { equippedItems, setEquippedItems } = useEquippedItems(character);
+  const equippedMelee = equippedItems?.melee;
+  const equippedRanged = equippedItems?.ranged;
+
+  const [activeTarget, setActiveTarget] = React.useState<string>("");
   const [showActiveWeaponModal, setShowActiveWeaponModal] =
     React.useState(false);
+  const [itemModalType, setItemModalType] = React.useState<RangeType>(
+    RangeType.Melee,
+  );
 
-  const options =
-    encounter.type === EncounterType.Mystery
-      ? (encounter as IMysteryEncounter).options
-      : [
-          {
-            description: "Attack",
-            effects: [
-              {
-                type: EffectType.Health,
-                dice: activeWeapon?.damage,
-              },
-            ],
-          },
-          {
-            description: "Cast Spell",
-            effects: [],
-          },
-          {
-            description: "Flee",
-            effects: [],
-          },
-        ];
+  const [options, setOptions] = React.useState<IOption[]>([]);
+
+  useEffect(() => {
+    if (encounter.type === EncounterType.Combat) {
+      const combatEncounter = encounter as ICombatEncounter;
+      setOptions([
+        {
+          description: "Strike",
+          stat: "strength",
+          difficulty:
+            combatEncounter.enemies.find((enemy) => enemy.id === activeTarget)
+              ?.defense || 0,
+          onSuccess: [
+            {
+              type: EffectType.Health,
+              dice: equippedMelee?.damage,
+              target: activeTarget,
+            },
+          ],
+          onFail: [],
+        },
+        {
+          description: "Volley",
+          stat: "agility",
+          difficulty:
+            combatEncounter.enemies.find((enemy) => enemy.id === activeTarget)
+              ?.defense || 0,
+          onSuccess: [
+            {
+              type: EffectType.Health,
+              dice: equippedMelee?.damage,
+              target: activeTarget,
+            },
+          ],
+          onFail: [],
+        },
+        {
+          description: "Cast Spell",
+          stat: "presence",
+          onSuccess: [],
+          onFail: [],
+        },
+        {
+          description: "Flee",
+          stat: "agility",
+          onSuccess: [],
+          onFail: [],
+        },
+      ]);
+      return;
+    }
+    if (encounter.type === EncounterType.Mystery) {
+      setOptions((encounter as IMysteryEncounter).options);
+    }
+  }, [equippedItems, activeTarget]);
+
+  useEffect(() => {
+    if (encounterState?.encounter.type === EncounterType.Combat) {
+      setActiveTarget(
+        (encounterState?.encounter as ICombatEncounter).enemies[0]
+          ? (encounterState?.encounter as ICombatEncounter).enemies[0].id
+          : "",
+      );
+    }
+  }, [encounterState]);
 
   useMount(() => {
     startEncounter(encounter);
@@ -84,7 +148,7 @@ export const ActiveEncounter = ({
       alignItems="center"
       sx={{ border: "4px solid white", borderRadius: 2 }}
       padding={5}
-      width={700}
+      width={1000}
     >
       <Box display="flex" flexDirection="column" alignItems="center">
         <Typography variant="game" fontSize={40}>
@@ -108,7 +172,7 @@ export const ActiveEncounter = ({
                 key={index}
                 padding={2}
                 sx={{ border: "1px solid white" }}
-                width={200}
+                width={400}
                 height="100%"
                 display="flex"
                 flexDirection="column"
@@ -127,34 +191,66 @@ export const ActiveEncounter = ({
       )}
       <Box
         display="flex"
+        flexDirection="column"
         justifyContent="space-evenly"
         marginTop={4}
         width="100%"
       >
-        {options.map((option, index) => (
+        {Array.from(
+          { length: Math.ceil(options.length / 2) },
+          (_, idx) => idx,
+        ).map((_, index) => (
           <Box
-            key={index}
+            key={`option_row_${index}`}
             padding={2}
-            sx={{ border: "1px solid white", cursor: "pointer" }}
-            width={200}
             display="flex"
-            flexDirection="column"
+            flexDirection="row"
+            width="100%"
             alignItems="center"
-            onClick={() => {
-              if (option.description === "Attack") {
-                if (!activeWeapon) {
-                  setShowActiveWeaponModal(true);
-                } else {
-                  option.effects.forEach((effect) => {
-                    applyEffect(effect, "enemies", character);
-                  });
-                }
-              }
-            }}
+            justifyContent="space-evenly"
+            gap={2}
           >
-            <Typography alignSelf="center" variant="game" fontSize={20}>
-              {option.description}
-            </Typography>
+            {options.slice(index * 2, index * 2 + 2).map((option, idx) => (
+              <Box
+                key={`option_${index}_${idx}`}
+                padding={2}
+                sx={{ border: "1px solid white", cursor: "pointer" }}
+                display="flex"
+                flexDirection="column"
+                width={"100%"}
+                alignItems="center"
+                onClick={() => {
+                  if (option.description === "Strike") {
+                    if (!equippedMelee) {
+                      setItemModalType(RangeType.Melee);
+                      setShowActiveWeaponModal(true);
+                    } else {
+                      doOption(option, character);
+                    }
+                  }
+                  if (option.description === "Volley") {
+                    if (!equippedMelee) {
+                      setItemModalType(RangeType.Ranged);
+                      setShowActiveWeaponModal(true);
+                    } else {
+                      doOption(option, character);
+                    }
+                  }
+                }}
+              >
+                <Typography alignSelf="center" variant="game" fontSize={30}>
+                  {option.description}
+                </Typography>
+                <Typography
+                  alignSelf="center"
+                  variant="game"
+                  fontSize={20}
+                  fontWeight="bold"
+                >
+                  {option.stat}: {character.stats[option.stat as keyof IStats]}
+                </Typography>
+              </Box>
+            ))}
           </Box>
         ))}
       </Box>
@@ -165,30 +261,47 @@ export const ActiveEncounter = ({
         <Box
           display="flex"
           flexDirection="column"
-          alignItems="start"
+          alignItems="center"
           justifyContent="center"
-          gap={2}
+          gap={5}
           sx={modalStyle}
-          padding={5}
+          padding={2}
         >
           <Typography alignSelf="center" variant="game" fontSize={30}>
             Choose a weapon to attack with
           </Typography>
-          <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            width="100%"
+            gap={2}
+          >
             {character.items
-              .filter((item) => item.type === ItemType.Weapon)
+              .filter(
+                (item) =>
+                  item.type === ItemType.Weapon &&
+                  (item as IWeapon).range === itemModalType,
+              )
               .map((weapon, index) => (
                 <Box
                   key={index}
                   padding={2}
                   sx={{ border: "1px solid white", cursor: "pointer" }}
-                  width={300}
+                  width={"100%"}
                   height="100%"
                   display="flex"
                   flexDirection="column"
                   alignItems="center"
                   onClick={() => {
-                    setActiveWeapon(weapon as IWeapon);
+                    if (!equippedItems) {
+                      return;
+                    }
+                    setEquippedItems({
+                      ...equippedItems,
+                      [itemModalType === RangeType.Melee ? "melee" : "ranged"]:
+                        weapon as IWeapon,
+                    });
                     setShowActiveWeaponModal(false);
                   }}
                 >

@@ -1,7 +1,7 @@
 import { Favorite, FavoriteBorder, Toll } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import React from "react";
-import { ICharacter } from "../../game/character";
+import { ICharacter } from "../../game/character/character";
 
 interface IOverlayProps {
   character: ICharacter;

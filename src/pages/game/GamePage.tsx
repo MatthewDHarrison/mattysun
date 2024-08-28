@@ -9,6 +9,7 @@ import { CharacterCreation } from "../../components/game/Character/CharacterCrea
 import { useMount } from "react-use";
 import { Ash } from "../../game/visual/Ash";
 import { ArrowForwardIos } from "@mui/icons-material";
+import { getSuccessChance } from "../../game/dice";
 
 export const GamePage = () => {
   const width = window.innerWidth;

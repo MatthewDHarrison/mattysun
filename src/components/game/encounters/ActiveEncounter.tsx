@@ -21,10 +21,11 @@ import {
 } from "../../../game/general";
 import { useEncounterState } from "../../../game/encounters/encounter.state";
 import { useMount } from "react-use";
-import { getDiceString } from "../../../game/dice";
+import { getDiceString, getSuccessChance } from "../../../game/dice";
 import { ItemIcon } from "../../../game/content/ItemIcon";
 import { EncounterEndModal } from "./EncounterEndModal";
 import { Overlay } from "../Overlay";
+import { abbreviateStat } from "../../../game/character/character.helpers";
 
 interface IEncounterProps {
   encounter: Encounter;
@@ -240,15 +241,19 @@ export const ActiveEncounter = ({
               >
                 <Typography alignSelf="center" variant="game" fontSize={30}>
                   {option.description}
+                  {`${option.stat && ` (${abbreviateStat(option.stat)})`}`}
                 </Typography>
-                <Typography
-                  alignSelf="center"
-                  variant="game"
-                  fontSize={20}
-                  fontWeight="bold"
-                >
-                  {option.stat}: {character.stats[option.stat as keyof IStats]}
-                </Typography>
+                {option.stat && option.difficulty && (
+                  <Typography alignSelf="center" variant="game" fontSize={20}>
+                    {(
+                      getSuccessChance(
+                        character.stats[option.stat],
+                        option.difficulty,
+                      ) * 100
+                    ).toFixed(0)}
+                    %
+                  </Typography>
+                )}
               </Box>
             ))}
           </Box>

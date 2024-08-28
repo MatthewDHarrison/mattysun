@@ -29,7 +29,7 @@ export const Encounters = ({ encounters }: IEncountersProps) => {
       backgroundColor="black"
       zIndex={1}
     >
-      {character && <Overlay character={character}/>}
+      {character && <Overlay character={character} />}
       <Box
         display="flex"
         flexDirection="column"

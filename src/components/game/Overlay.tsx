@@ -57,7 +57,7 @@ export const Overlay = ({ character }: IOverlayProps) => {
               gap={1}
               flexDirection="row"
             >
-               <Toll />
+              <Toll />
               <Typography variant="game" fontSize={20}>
                 {character.coin}
               </Typography>

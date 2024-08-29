@@ -58,6 +58,7 @@ export const ActiveEncounter = ({
   const { encounterState, startEncounter, endEncounter, doOption } =
     useEncounterState();
   const { equippedItems, setEquippedItems } = useEquippedItems(character);
+  const [theirTurn, setTheirTurn] = React.useState(false);
   const equippedMelee = equippedItems?.melee;
   const equippedRanged = equippedItems?.ranged;
 
@@ -69,6 +70,20 @@ export const ActiveEncounter = ({
   );
 
   const [options, setOptions] = React.useState<IOption[]>([]);
+
+  useEffect(() => {
+    if (theirTurn) {
+      if (encounterState?.encounter.type === EncounterType.Combat) {
+        const combatEncounter = encounterState?.encounter as ICombatEncounter;
+        combatEncounter.enemies.forEach((enemy) => {
+          const option =
+            enemy.options[Math.floor(Math.random() * enemy.options.length)];
+          doOption(option, character, setCharacter);
+        });
+      }
+      setTheirTurn(false);
+    }
+  }, [theirTurn]);
 
   useEffect(() => {
     if (encounter.type === EncounterType.Combat) {
@@ -98,7 +113,7 @@ export const ActiveEncounter = ({
           onSuccess: [
             {
               type: EffectType.Health,
-              dice: equippedMelee?.damage,
+              dice: equippedRanged?.damage,
               target: activeTarget,
             },
           ],
@@ -164,6 +179,7 @@ export const ActiveEncounter = ({
           display="flex"
           flexDirection="row"
           alignItems="center"
+          width="100%"
           gap={2}
           marginTop={3}
         >
@@ -173,7 +189,7 @@ export const ActiveEncounter = ({
                 key={index}
                 padding={2}
                 sx={{ border: "1px solid white" }}
-                width={400}
+                width={`${100 / (encounter as ICombatEncounter).enemies.length}%`}
                 height="100%"
                 display="flex"
                 flexDirection="column"
@@ -227,7 +243,9 @@ export const ActiveEncounter = ({
                       setShowActiveWeaponModal(true);
                     } else {
                       doOption(option, character);
+                      setTheirTurn(true);
                     }
+                    return;
                   }
                   if (option.description === "Volley") {
                     if (!equippedMelee) {
@@ -235,8 +253,12 @@ export const ActiveEncounter = ({
                       setShowActiveWeaponModal(true);
                     } else {
                       doOption(option, character);
+                      setTheirTurn(true);
                     }
+                    return;
                   }
+                  doOption(option, character);
+                  setTheirTurn(true);
                 }}
               >
                 <Typography alignSelf="center" variant="game" fontSize={30}>

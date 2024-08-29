@@ -17,12 +17,11 @@ export const GamePage = () => {
   const { gameState, updateGameState } = useGameState();
 
   useEffect(() => {
-    console.log("gameState", gameState);
-    console.log("character", character);
     if (!gameState) {
       updateGameState({ location: "start" });
     }
   }, [gameState]);
+  console.log('here')
 
   return (
     <>

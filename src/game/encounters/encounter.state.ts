@@ -20,14 +20,36 @@ export const applyEffectToEncounter = (
   effect: IEffect,
   setEncounter: (encounterState: IEncounterState) => void,
   character?: ICharacter,
+  setCharacter?: React.Dispatch<
+    React.SetStateAction<ICharacter | null | undefined>
+  >,
 ) => {
+  console.log("Applying effect", effect);
   const totalValue =
     effect.value || 0 + (effect.dice ? rollDice(effect.dice) : 0);
 
   if (encounter.type === EncounterType.Combat) {
     const combatEncounter = encounter as ICombatEncounter;
     if (effect.target === "self") {
-      // apply effect to self
+      if (setCharacter === undefined || !character) {
+        console.error("Need to pass setCharacter/character for self effects");
+      }
+      if (effect.type === EffectType.Health) {
+        character!.hp -= totalValue;
+        if (setCharacter) {
+          setCharacter({
+            ...character!,
+            hp: (character!.hp -= totalValue),
+          });
+        }
+        if (character!.hp <= 0) {
+          setEncounter({
+            encounter: combatEncounter,
+            isOver: true,
+          });
+        }
+      }
+      return;
     }
     if (effect.target === "enemies") {
       if (effect.type === EffectType.Health) {
@@ -44,6 +66,7 @@ export const applyEffectToEncounter = (
           isOver: combatEncounter.enemies.length === 0,
         });
       }
+      return;
     }
     if (effect.target === "all") {
       // apply effect to all
@@ -53,6 +76,8 @@ export const applyEffectToEncounter = (
     );
     if (!enemy) {
       console.error("Enemy not found", effect.target);
+      console.error(combatEncounter.enemies);
+      console.error(effect);
       return;
     }
     if (effect.type === EffectType.Health) {
@@ -66,6 +91,7 @@ export const applyEffectToEncounter = (
         encounter: combatEncounter,
         isOver: combatEncounter.enemies.length === 0,
       });
+      return;
     }
   }
 };
@@ -82,7 +108,13 @@ export const useEncounterState = () => {
     });
   };
 
-  const doOption = (option: IOption, character?: ICharacter) => {
+  const doOption = (
+    option: IOption,
+    character?: ICharacter,
+    setCharacter?: React.Dispatch<
+      React.SetStateAction<ICharacter | null | undefined>
+    >,
+  ) => {
     if (encounterState) {
       if (option.stat && option.difficulty) {
         // roll dice
@@ -90,8 +122,6 @@ export const useEncounterState = () => {
           dice: [DiceType.D6, DiceType.D6],
           modifier: character?.stats[option.stat] || 0,
         });
-        console.log("Roll", roll);
-        console.log("Difficulty", option.difficulty);
         if (roll < option.difficulty) {
           option.onFail.forEach((effect) => {
             applyEffectToEncounter(
@@ -99,6 +129,7 @@ export const useEncounterState = () => {
               effect,
               setEncounterState,
               character,
+              setCharacter,
             );
           });
           return;
@@ -109,6 +140,7 @@ export const useEncounterState = () => {
             effect,
             setEncounterState,
             character,
+            setCharacter,
           );
         });
       }
@@ -144,7 +176,6 @@ export const useEncounterState = () => {
       // );
       const newItems: Item[] = [];
 
-      console.log("New coins", newCoins);
       return {
         ...prev,
         coin: prev.coin + (newCoins || 0),

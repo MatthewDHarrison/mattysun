@@ -22,7 +22,6 @@ export const useGameState = () => {
 
   useEffect(() => {
     setGameStateStorage(gameState);
-    console.log("state change");
   }, [gameState]);
 
   return {

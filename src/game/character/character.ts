@@ -47,8 +47,6 @@ export const useCharacter = () => {
   };
 
   useEffect(() => {
-    console.log("character change");
-    console.log(character, characterStorage);
     setCharacterStorage(character);
   }, [character, setCharacterStorage]);
 

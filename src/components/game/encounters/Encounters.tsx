@@ -13,10 +13,6 @@ export const Encounters = ({ encounters }: IEncountersProps) => {
   const activeEncounter = encounters[0];
   const { character, setCharacter } = useCharacter();
 
-  useEffect(() => {
-    console.log("character", character);
-  }, [character]);
-
   return (
     <Box
       height={"100vh"}

@@ -1,4 +1,4 @@
-import { IDice } from "./dice";
+import { IOption } from "./encounter";
 
 export interface IMonster {
   id: string;
@@ -7,6 +7,6 @@ export interface IMonster {
   maxHp: number;
   defense: number;
   morale: number;
-  damage: IDice;
+  options: IOption[];
   special: string;
 }

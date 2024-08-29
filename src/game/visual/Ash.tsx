@@ -92,7 +92,6 @@ export const makeAsh = (
 
   const canvas = canvasRef.current;
   const buffer = bufferRef.current;
-  console.log("test");
   const cntr = document.getElementById("Game");
   const W = cntr?.offsetWidth || 0;
   const H = cntr?.offsetHeight || 0;

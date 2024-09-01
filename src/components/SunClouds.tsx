@@ -6,23 +6,17 @@ import { MattyText } from "./MattyText";
 import { EffectComposer, Noise, Vignette } from "@react-three/postprocessing";
 
 interface ISceneProps {
-  width: number;
+  isPooing: boolean;
 }
 
-export const Scene = ({ width }: ISceneProps) => {
+export const Scene = ({ isPooing }: ISceneProps) => {
   return (
     <Canvas dpr={[1, 2]}>
-      <ambientLight intensity={0.7} />
+      <ambientLight intensity={0.5} />
       <Suspense fallback={"Loading"}>
-        <Model width={width} />
+        <Model isPooing={isPooing} />
       </Suspense>
-      <MattyText />
-      <EffectComposer>
-        {/* Noise adds the grainy effect */}
-        <Noise opacity={0.2} />
-
-        {/* Vignette adds a darkening effect on the edges, enhancing the distressed look */}
-      </EffectComposer>
+      {/* <MattyText /> */}
     </Canvas>
   );
 };

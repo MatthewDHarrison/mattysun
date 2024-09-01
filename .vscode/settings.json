@@ -17,5 +17,6 @@
     "javascriptreact",
     "html",
     "typescriptreact"
-  ]
+  ],
+  "eslint.useFlatConfig": true
 }

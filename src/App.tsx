@@ -12,15 +12,12 @@ function App() {
   return (
     <div className="App" id="Game">
 
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/game" element={<GamePage />} />
           </Routes>
         </BrowserRouter>
-      </ThemeProvider>
     </div>
   );
 }

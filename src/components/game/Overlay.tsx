@@ -1,5 +1,10 @@
-import { Favorite, FavoriteBorder, Toll } from "@mui/icons-material";
-import { Box, Typography } from "@mui/material";
+import {
+  Favorite,
+  FavoriteBorder,
+  HeartBrokenOutlined,
+  Toll,
+} from "@mui/icons-material";
+import { Box, Button, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { ICharacter } from "../../game/character/character";
 
@@ -7,24 +12,47 @@ interface IOverlayProps {
   character: ICharacter;
 }
 
+const ANIMATION_DURATION = 100;
+const SVG_SIZE_SMALL = 32;
+const SVG_SIZE_LARGE = 48;
+
 export const Overlay = ({ character }: IOverlayProps) => {
   const name = character.name;
   const [currentHealth, setCurrentHealth] = useState(character.hp);
+  const [currentCoin, setCurrentCoin] = useState(character.coin);
   const maxHealth = 30;
   const location = "Rotblack Dungeon";
-  const [heartSize, setHeartSize] = useState("medium");
-  const [heartColor, setHeartColor] = useState("white");
+  const [heartSize, setHeartSize] = useState(SVG_SIZE_SMALL);
+  const [heartColor, setHeartColor] = useState("light");
+  const [coinSize, setCoinSize] = useState(SVG_SIZE_SMALL);
+  const [coinColor, setCoinColor] = useState("light");
+  const [animTime, setAnimTime] = useState(ANIMATION_DURATION);
 
   useEffect(() => {
+    const healthDifference = character.hp - currentHealth;
     setCurrentHealth(character.hp);
-    if (character.hp < currentHealth) {
+    setCurrentCoin(character.coin);
+    if (character.hp !== currentHealth) {
+      if (healthDifference > 7) {
+        setAnimTime(ANIMATION_DURATION * 2);
+      }
       // change heart size and color for 1 second
       setHeartColor("red");
-      setHeartSize("large");
+      setHeartSize(SVG_SIZE_LARGE);
       setTimeout(() => {
-        setHeartColor("white");
-        setHeartSize("medium");
-      }, 100);
+        setHeartColor("light");
+        setHeartSize(SVG_SIZE_SMALL);
+      }, ANIMATION_DURATION);
+    }
+
+    if (character.coin !== currentCoin) {
+      // change heart size and color for 1 second
+      setCoinColor("yellow");
+      setCoinSize(SVG_SIZE_LARGE);
+      setTimeout(() => {
+        setCoinColor("light");
+        setCoinSize(SVG_SIZE_SMALL);
+      }, ANIMATION_DURATION);
     }
   }, [character]);
 
@@ -38,41 +66,61 @@ export const Overlay = ({ character }: IOverlayProps) => {
         position="absolute"
         top={0}
       >
-        <Box display="flex-between" alignItems="center">
-          <Box
-            sx={{ borderRadius: "50%", width: 100, height: 100 }}
-            bgcolor="gray"
-            padding={1}
-            margin={1}
-            component="img"
-            src="/assets/game/hero.png"
-          ></Box>
-          <Box margin={1} display="flex" flexDirection="column">
-            <Box>
-              <Typography variant="game" fontSize={30}>
+        <Box>
+          <Box display="flex" flexDirection="row">
+            <Box
+              sx={{ borderRadius: "50%", width: 120, height: 120 }}
+              bgcolor="gray"
+              padding={1}
+              margin={1}
+              component="img"
+              src="/assets/game/hero.png"
+            />
+            <Box display="flex" flexDirection="column" sx={{ mt: 3, ml: 3 }}>
+              <Typography variant="game" fontSize={40}>
                 {name}
               </Typography>
             </Box>
+          </Box>
+          <Box display="flex" flexDirection="column" width="50%">
             <Box
               display="flex"
               alignItems="center"
               justifyContent="space-between"
-              gap={1}
               flexDirection="row"
-              height="6-px"
-              width="120px"
             >
-              <Box height="20px" sx={{ ml: 2 }}>
-                <FavoriteBorder
-                  fontSize={heartSize}
-                  htmlColor={heartColor}
-                  sx={{
-                    transition: "color 0.1s, size 0.1s",
-                    transform: "translate(-50%, -50%)",
-                  }}
-                />
+              <Box
+                height={SVG_SIZE_LARGE}
+                width={SVG_SIZE_LARGE}
+                position="relative"
+              >
+                {currentHealth > 5 ? (
+                  <FavoriteBorder
+                    htmlColor={heartColor}
+                    sx={{
+                      position: "absolute",
+                      transition: `all ${animTime / 1000}s`,
+                      transform: "translate(-50%, -50%)",
+                      left: "50%",
+                      top: "50%",
+                      fontSize: heartSize,
+                    }}
+                  />
+                ) : (
+                  <HeartBrokenOutlined
+                    htmlColor={heartColor}
+                    sx={{
+                      position: "absolute",
+                      transition: `all ${animTime / 1000}s`,
+                      transform: "translate(-50%, -50%)",
+                      left: "50%",
+                      top: "50%",
+                      fontSize: heartSize,
+                    }}
+                  />
+                )}
               </Box>
-              <Typography variant="game" fontSize={20} sx={{ mb: 2.3 }}>
+              <Typography variant="game" fontSize={28}>
                 {currentHealth}/{maxHealth}
               </Typography>
             </Box>
@@ -80,27 +128,33 @@ export const Overlay = ({ character }: IOverlayProps) => {
               display="flex"
               alignItems="center"
               justifyContent="space-between"
-              gap={1}
               flexDirection="row"
-              height="6-px"
-              width="120px"
             >
-              <Box height="20px" sx={{ ml: 2 }}>
+              <Box
+                height={SVG_SIZE_LARGE}
+                width={SVG_SIZE_LARGE}
+                position="relative"
+              >
                 <Toll
+                  htmlColor={coinColor}
                   sx={{
-                    transition: "color 0.1s, size 0.1s",
+                    position: "absolute",
+                    transition: `all ${ANIMATION_DURATION / 1000}s`,
                     transform: "translate(-50%, -50%)",
+                    left: "50%",
+                    top: "50%",
+                    fontSize: coinSize,
                   }}
                 />
               </Box>
-              <Typography variant="game" fontSize={20} sx={{ mb: 2 }}>
-                {character.coin}
+              <Typography variant="game" fontSize={28}>
+                {currentCoin}
               </Typography>
             </Box>
           </Box>
         </Box>
         <Box margin={3}>
-          <Typography variant="game" fontSize={30}>
+          <Typography variant="game" fontSize={40}>
             {location}
           </Typography>
         </Box>

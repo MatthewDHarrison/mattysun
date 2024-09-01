@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Link } from "@mui/material";
+import { Box, CssBaseline, Link, ThemeProvider } from "@mui/material";
 import { Scene } from "../components/SunClouds";
 import {
   Instagram,
@@ -8,6 +8,7 @@ import {
   GraphicEq,
   MusicNote,
 } from "@mui/icons-material";
+import { theme } from "../Theme";
 
 const LINKS = [
   {
@@ -40,53 +41,60 @@ export const HomePage = () => {
   const width = window.innerWidth;
   return (
     <>
-      <Box
-        height={"100vh"}
-        width="100vw"
-        position="relative"
-        display="flex"
-        alignItems="end"
-        justifyContent="center"
-        padding={{ b: 3 }}
-        
-      >
-        <Box zIndex={1} position="absolute" height="100vh" width="100%">
-          <Scene width={width} />
-        </Box>
-        <Box zIndex={3} display="inline-flex" sx={{ mb: width < 800 ? 10 : 3 }}>
-          {LINKS.map((link, index) => (
-            <Box display="inline-flex" key={link.name}>
-              <Box
-                display="inline-flex"
-                gap={1}
-                onClick={() => (window.location.href = link.href)}
-                justifyItems="center"
-              >
-                {link.icon}
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
 
-                {width > 800 && (
-                  <Link
-                    color="#fff"
-                    key={link.name}
-                    href={link.href}
-                    underline="hover"
-                    sx={{ display: "block" }}
-                  >
-                    {link.name}
-                  </Link>
+        <Box
+          height={"100vh"}
+          width="100vw"
+          position="relative"
+          display="flex"
+          alignItems="end"
+          justifyContent="center"
+          padding={{ b: 3 }}
+        >
+          <Box zIndex={1} position="absolute" height="100vh" width="100%">
+            <Scene width={width} />
+          </Box>
+          <Box
+            zIndex={3}
+            display="inline-flex"
+            sx={{ mb: width < 800 ? 10 : 3 }}
+          >
+            {LINKS.map((link, index) => (
+              <Box display="inline-flex" key={link.name}>
+                <Box
+                  display="inline-flex"
+                  gap={1}
+                  onClick={() => (window.location.href = link.href)}
+                  justifyItems="center"
+                >
+                  {link.icon}
+
+                  {width > 800 && (
+                    <Link
+                      color="#fff"
+                      key={link.name}
+                      href={link.href}
+                      underline="hover"
+                      sx={{ display: "block" }}
+                    >
+                      {link.name}
+                    </Link>
+                  )}
+                </Box>
+
+                {index < LINKS.length - 1 && (
+                  <Box
+                    height="100%"
+                    sx={{ width: "2px", mx: 3, bgcolor: "#fff" }}
+                  />
                 )}
               </Box>
-
-              {index < LINKS.length - 1 && (
-                <Box
-                  height="100%"
-                  sx={{ width: "2px", mx: 3, bgcolor: "#fff" }}
-                />
-              )}
-            </Box>
-          ))}
+            ))}
+          </Box>
         </Box>
-      </Box>
+      </ThemeProvider>
     </>
   );
 };

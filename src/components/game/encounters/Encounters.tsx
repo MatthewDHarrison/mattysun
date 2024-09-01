@@ -22,7 +22,6 @@ export const Encounters = ({ encounters }: IEncountersProps) => {
       alignItems="center"
       justifyContent="center"
       padding={{ b: 3 }}
-      backgroundColor="black"
       zIndex={1}
     >
       {character && <Overlay character={character} />}

@@ -13,8 +13,8 @@ export const encounters: Encounter[] = [
       {
         id: v4(),
         name: "Skeleton Warrior",
-        hp: 5,
-        maxHp: 5,
+        hp: 50,
+        maxHp: 50,
         defense: 4,
         morale: 5,
         options: [

@@ -25,18 +25,11 @@ export const Encounters = ({ encounters }: IEncountersProps) => {
       zIndex={1}
     >
       {character && <Overlay character={character} />}
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        zIndex={1}
-        width={1200}
-      >
-        <ActiveEncounter
-          encounter={activeEncounter}
-          setCharacter={setCharacter}
-        />
-      </Box>
+
+      <ActiveEncounter
+        encounter={activeEncounter}
+        setCharacter={setCharacter}
+      />
     </Box>
   );
 };

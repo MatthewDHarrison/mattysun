@@ -29,24 +29,7 @@ import { abbreviateStat } from "../../../game/character/character.helpers";
 import { gameTheme } from "../../../game/GameTheme";
 import { EnemyCanvas } from "./EnemyCanvas";
 import { keyframes } from "@emotion/react";
-
-const shake = keyframes`
-  0% { transform: translate(1px, 1px) rotate(0deg); }
-  10% { transform: translate(-1px, -2px) rotate(-1deg); }
-  20% { transform: translate(-3px, 0px) rotate(1deg); }
-  30% { transform: translate(3px, 2px) rotate(0deg); }
-  40% { transform: translate(1px, -1px) rotate(1deg); }
-  50% { transform: translate(-1px, 2px) rotate(-1deg); }
-  60% { transform: translate(-3px, 1px) rotate(0deg); }
-  70% { transform: translate(3px, 1px) rotate(-1deg); }
-  80% { transform: translate(-1px, -1px) rotate(1deg); }
-  90% { transform: translate(1px, 2px) rotate(0deg); }
-  100% { transform: translate(1px, -2px) rotate(-1deg); }
-`;
-
-const EnemyCanvasBox = styled(Box)`
-  animation: ${shake} 0.5s infinte;
-`;
+import { EncounterEnemy } from "./EncounterEnemy";
 
 interface IEncounterProps {
   encounter: Encounter;
@@ -80,7 +63,11 @@ export const ActiveEncounter = ({
     useEncounterState();
   const { equippedItems, setEquippedItems } = useEquippedItems(character);
   const [theirTurn, setTheirTurn] = React.useState(false);
-  const [isDamaged, setIsDamaged] = React.useState(false);
+  const [isDamaged, setIsDamaged] = React.useState(
+    encounter.type === EncounterType.Combat
+      ? (encounter as ICombatEncounter).enemies.map((_) => false)
+      : false,
+  );
   const equippedMelee = equippedItems?.melee;
   const equippedRanged = equippedItems?.ranged;
 
@@ -90,7 +77,9 @@ export const ActiveEncounter = ({
   const [itemModalType, setItemModalType] = React.useState<RangeType>(
     RangeType.Melee,
   );
-
+  const [enemyOption, setEnemyOption] = React.useState<IOption | null>(null);
+  const [hpDiff, setHpDiff] = React.useState<number | null>(null);
+  const [currHp, setCurrHp] = React.useState<number>(character.hp);
   const [options, setOptions] = React.useState<IOption[]>([]);
 
   useEffect(() => {
@@ -100,12 +89,24 @@ export const ActiveEncounter = ({
         combatEncounter.enemies.forEach((enemy) => {
           const option =
             enemy.options[Math.floor(Math.random() * enemy.options.length)];
+          setEnemyOption(option);
           doOption(option, character, setCharacter);
+          setTimeout(() => {
+            setEnemyOption(null);
+            setTheirTurn(false);
+          }, 2000);
         });
       }
-      setTheirTurn(false);
     }
   }, [theirTurn]);
+
+  useEffect(() => {
+    if (character.hp < currHp) {
+      setHpDiff(currHp - character.hp);
+    }
+    setCurrHp(character.hp);
+  }, [character.hp]);
+
 
   useEffect(() => {
     if (encounter.type === EncounterType.Combat) {
@@ -184,158 +185,144 @@ export const ActiveEncounter = ({
       display="flex"
       flexDirection="column"
       alignItems="center"
-      justifyContent="center"
       position="relative"
-      sx={{ mt: 20 }}
+      justifyContent="space-between"
+      height="100%"
+      zIndex={1}
+      width={1200}
     >
-      <EnemyCanvasBox
-        position="absolute"
-        sx={{
-          transform: "translate(-50%, -50%)",
-          left: "50%",
-          top: "-10%",
-          width: "800px",
-          height: "900px",
-          mt: 40,
-        }}
-        zIndex={0}
-      >
-        <EnemyCanvas src="assets/game/skeleton2.png" isDamaged={isDamaged} />
-      </EnemyCanvasBox>
+      <Box margin={4}>
+        <Typography variant="game" fontSize={64}>
+          {encounterState.encounter.name}
+        </Typography>
+      </Box>
+      {encounterState.encounter.type === EncounterType.Combat &&
+        (encounterState.encounter as ICombatEncounter).enemies.map(
+          (enemy, index) => (
+            <EncounterEnemy key={`enemy_${index}`} enemy={enemy} />
+          ),
+        )}
       <Box
         display="flex"
         flexDirection="column"
         alignItems="center"
-        sx={{
-          border: `4px solid ${gameTheme.palette.light}`,
-          borderRadius: 2,
-          mt: 50,
-        }}
         padding={5}
         width={1000}
-        backgroundColor="dark"
         zIndex={1}
+        margin={8}
       >
-        <Box display="flex" flexDirection="column" alignItems="center">
-          <Typography variant="game" fontSize={30}>
-            {encounterState.encounter.name}
-          </Typography>
-          <Typography variant="game" fontSize={20}>
-            {encounterState.encounter.description}
-          </Typography>
-        </Box>
-        {encounterState.encounter.type === EncounterType.Combat && (
-          <Box
-            display="flex"
-            flexDirection="row"
-            alignItems="center"
-            width="100%"
-            gap={2}
-            marginTop={3}
-          >
-            {(encounterState.encounter as ICombatEncounter).enemies.map(
-              (enemy, index) => (
-                <Box
-                  key={index}
-                  padding={2}
-                  sx={{ border: `1px solid ${gameTheme.palette.light}` }}
-                  width={`${100 / (encounter as ICombatEncounter).enemies.length}%`}
-                  height="100%"
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                >
-                  <Typography alignSelf="center" variant="game" fontSize={24}>
-                    {enemy.name}
-                  </Typography>
-                  <Typography alignSelf="center" variant="game" fontSize={16}>
-                    {enemy.hp}/{enemy.maxHp}
-                  </Typography>
-                </Box>
-              )
-            )}
-          </Box>
-        )}
         <Box
           display="flex"
           flexDirection="column"
           justifyContent="space-evenly"
           marginTop={4}
           width="100%"
+          gap={2}
         >
-          {Array.from(
-            { length: Math.ceil(options.length / 2) },
-            (_, idx) => idx
-          ).map((_, index) => (
+          {!theirTurn &&
+            Array.from(
+              { length: Math.ceil(options.length / 2) },
+              (_, idx) => idx,
+            ).map((_, index) => (
+              <Box
+                key={`option_row_${index}`}
+                padding={1}
+                display="flex"
+                flexDirection="row"
+                width="100%"
+                alignItems="center"
+                justifyContent="space-evenly"
+                gap={3}
+              >
+                {options.slice(index * 2, index * 2 + 2).map((option, idx) => (
+                  <Box
+                    key={`option_${index}_${idx}`}
+                    padding={1}
+                    sx={{
+                      border: `2px solid ${gameTheme.palette.light}`,
+                      cursor: "pointer",
+                    }}
+                    backgroundColor={gameTheme.palette.dark}
+                    display="flex"
+                    flexDirection="column"
+                    width={"100%"}
+                    alignItems="center"
+                    gap={1}
+                    onClick={() => {
+                      if (option.description === "Strike") {
+                        if (!equippedMelee) {
+                          setItemModalType(RangeType.Melee);
+                          setShowActiveWeaponModal(true);
+                        } else {
+                          doOption(option, character);
+                          setTimeout(() => {
+                            setTheirTurn(true);
+                          }, 1000);
+                        }
+                        return;
+                      }
+                      if (option.description === "Volley") {
+                        if (!equippedMelee) {
+                          setItemModalType(RangeType.Ranged);
+                          setShowActiveWeaponModal(true);
+                        } else {
+                          doOption(option, character);
+                          setTimeout(() => {
+                            setTheirTurn(true);
+                          }, 1000);
+                        }
+                        return;
+                      }
+                      doOption(option, character);
+                      setTimeout(() => {
+                        setTheirTurn(true);
+                      }, 1000);
+                    }}
+                  >
+                    <Typography alignSelf="center" variant="game" fontSize={28}>
+                      {option.description}
+                      {`${option.stat && ` (${abbreviateStat(option.stat)})`}`}
+                    </Typography>
+                    {option.stat && option.difficulty && (
+                      <Typography
+                        alignSelf="center"
+                        variant="game"
+                        fontSize={20}
+                      >
+                        {(
+                          getSuccessChance(
+                            character.stats[option.stat],
+                            option.difficulty,
+                          ) * 100
+                        ).toFixed(0)}
+                        %
+                      </Typography>
+                    )}
+                  </Box>
+                ))}
+              </Box>
+            ))}
+          {enemyOption && theirTurn && (
             <Box
-              key={`option_row_${index}`}
               padding={1}
+              sx={{
+                border: `2px solid ${gameTheme.palette.light}`,
+              }}
+              backgroundColor={gameTheme.palette.dark}
               display="flex"
-              flexDirection="row"
-              width="100%"
+              flexDirection="column"
+              width={"100%"}
               alignItems="center"
-              justifyContent="space-evenly"
               gap={1}
             >
-              {options.slice(index * 2, index * 2 + 2).map((option, idx) => (
-                <Box
-                  key={`option_${index}_${idx}`}
-                  padding={1}
-                  sx={{
-                    border: `1px solid ${gameTheme.palette.light}`,
-                    cursor: "pointer",
-                  }}
-                  display="flex"
-                  flexDirection="column"
-                  width={"100%"}
-                  alignItems="center"
-                  onClick={() => {
-                    if (option.description === "Strike") {
-                      if (!equippedMelee) {
-                        setItemModalType(RangeType.Melee);
-                        setShowActiveWeaponModal(true);
-                      } else {
-                        doOption(option, character);
-                        setTheirTurn(true);
-                      }
-                      return;
-                    }
-                    if (option.description === "Volley") {
-                      if (!equippedMelee) {
-                        setItemModalType(RangeType.Ranged);
-                        setShowActiveWeaponModal(true);
-                      } else {
-                        doOption(option, character);
-                        setTheirTurn(true);
-                      }
-                      return;
-                    }
-                    doOption(option, character);
-                    setTheirTurn(true);
-                  }}
-                >
-                  <Typography alignSelf="center" variant="game" fontSize={20}>
-                    {option.description}
-                    {`${option.stat && ` (${abbreviateStat(option.stat)})`}`}
-                  </Typography>
-                  {option.stat && option.difficulty && (
-                    <Typography alignSelf="center" variant="game" fontSize={15}>
-                      {(
-                        getSuccessChance(
-                          character.stats[option.stat],
-                          option.difficulty
-                        ) * 100
-                      ).toFixed(0)}
-                      %
-                    </Typography>
-                  )}
-                </Box>
-              ))}
-              <Button variant="game" onClick={() => setIsDamaged(!isDamaged)}>
-                Damage
-              </Button>
+              <Typography alignSelf="center" variant="game" fontSize={28}>
+                {enemyOption.description}
+              </Typography>
+              <Typography alignSelf="center" variant="game" fontSize={20}>
+                You took {hpDiff} damage
+              </Typography>
             </Box>
-          ))}
+          )}
         </Box>
         <Modal
           open={showActiveWeaponModal}
@@ -364,7 +351,7 @@ export const ActiveEncounter = ({
                 .filter(
                   (item) =>
                     item.type === ItemType.Weapon &&
-                    (item as IWeapon).range === itemModalType
+                    (item as IWeapon).range === itemModalType,
                 )
                 .map((weapon, index) => (
                   <Box

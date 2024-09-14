@@ -24,12 +24,13 @@ export const Encounters = ({ encounters }: IEncountersProps) => {
       padding={{ b: 3 }}
       zIndex={1}
     >
-      {character && <Overlay character={character} />}
-
-      <ActiveEncounter
-        encounter={activeEncounter}
-        setCharacter={setCharacter}
-      />
+      {character && (
+        <ActiveEncounter
+          encounter={activeEncounter}
+          character={character}
+          setCharacter={setCharacter}
+        />
+      )}
     </Box>
   );
 };

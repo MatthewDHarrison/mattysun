@@ -82,8 +82,6 @@ export const EncounterEnemy = ({ enemy }: EncounterEnemyProps) => {
   const [showMiss, setShowMiss] = React.useState(false);
   const [textPos, setTextPos] = React.useState({ x: 0, y: 0 });
 
-  console.log("enemy hp", enemy.hp);
-  console.log("currEnemyHp", currEnemyHp);
   React.useEffect(() => {
     if (enemy.hp < currEnemyHp) {
       setShowHit(enemy.hp - currEnemyHp);

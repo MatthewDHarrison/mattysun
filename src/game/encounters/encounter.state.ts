@@ -34,15 +34,17 @@ export const applyEffectToEncounter = (
       if (setCharacter === undefined || !character) {
         console.error("Need to pass setCharacter/character for self effects");
       }
+      console.log("Applying effect to self", effect, totalValue);
       if (effect.type === EffectType.Health) {
-        character!.hp -= totalValue;
+        const newHp = character!.hp - totalValue;
+        character!.hp = newHp;
         if (setCharacter) {
           setCharacter({
             ...character!,
-            hp: (character!.hp -= totalValue),
+            hp: character!.hp,
           });
         }
-        if (character!.hp <= 0) {
+        if (newHp <= 0) {
           setEncounter({
             encounter: combatEncounter,
             isOver: true,

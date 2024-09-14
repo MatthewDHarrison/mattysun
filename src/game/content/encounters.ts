@@ -1,6 +1,7 @@
 import { Encounter, EncounterType, RewardType } from "../encounter";
 import { v4 } from "uuid";
 import { EffectType } from "../general";
+import { DiceType } from "../dice";
 
 export const encounters: Encounter[] = [
   {
@@ -13,7 +14,7 @@ export const encounters: Encounter[] = [
       {
         id: v4(),
         name: "Skeleton Warrior",
-        hp: 10,
+        hp: 100,
         maxHp: 10,
         defense: 4,
         morale: 5,
@@ -22,8 +23,14 @@ export const encounters: Encounter[] = [
             description: "The skeleton swings his bloody axe.",
             onSuccess: [],
             stat: "toughness",
-            difficulty: 4,
-            onFail: [{ type: EffectType.Health, target: "self", value: 1 }],
+            difficulty: 7,
+            onFail: [
+              {
+                type: EffectType.Health,
+                target: "self",
+                dice: { dice: [DiceType.D6], modifier: 0 },
+              },
+            ],
           },
         ],
         special: "None",

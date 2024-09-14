@@ -7,6 +7,9 @@ import {
 import { Box, Button, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { ICharacter } from "../../game/character/character";
+import { gameTheme } from "../../game/GameTheme";
+import { transform } from "typescript";
+import { theme } from "../../Theme";
 
 interface IOverlayProps {
   character: ICharacter;
@@ -37,7 +40,7 @@ export const Overlay = ({ character }: IOverlayProps) => {
         setAnimTime(ANIMATION_DURATION * 2);
       }
       // change heart size and color for 1 second
-      setHeartColor("red");
+      setHeartColor(gameTheme.palette.red || "red");
       setHeartSize(SVG_SIZE_LARGE);
       setTimeout(() => {
         setHeartColor("light");
@@ -61,7 +64,7 @@ export const Overlay = ({ character }: IOverlayProps) => {
       <Box
         display="flex"
         justifyContent="space-between"
-        padding={3}
+        padding={2}
         width="100%"
         position="absolute"
         top={0}
@@ -70,29 +73,27 @@ export const Overlay = ({ character }: IOverlayProps) => {
           <Box display="flex" flexDirection="row">
             <Box
               sx={{ borderRadius: "50%", width: 120, height: 120 }}
-              bgcolor="gray"
+              bgcolor={gameTheme.palette.light2}
               padding={1}
               margin={1}
               component="img"
               src="/assets/game/hero.png"
             />
-            <Box display="flex" flexDirection="column" sx={{ mt: 3, ml: 3 }}>
-              <Typography variant="game" fontSize={40}>
-                {name}
-              </Typography>
-            </Box>
           </Box>
-          <Box display="flex" flexDirection="column" width="50%">
+          <Box display="flex" flexDirection="column" width="100%">
+            <Box display="flex" flexDirection="column"></Box>
             <Box
               display="flex"
               alignItems="center"
               justifyContent="space-between"
               flexDirection="row"
+              position="relative"
             >
               <Box
                 height={SVG_SIZE_LARGE}
                 width={SVG_SIZE_LARGE}
                 position="relative"
+                zIndex={10}
               >
                 {currentHealth > 5 ? (
                   <FavoriteBorder
@@ -120,9 +121,33 @@ export const Overlay = ({ character }: IOverlayProps) => {
                   />
                 )}
               </Box>
-              <Typography variant="game" fontSize={28}>
-                {currentHealth}/{maxHealth}
+              <Typography variant="game" fontSize={24}>
+                {name}
               </Typography>
+              <Box
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
+                height={10}
+                width="100%"
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  transform: "translateY(-50%)",
+                }}
+                zIndex={1}
+              >
+                <Box
+                  backgroundColor={gameTheme.palette.red || "red"}
+                  width={(currentHealth / maxHealth) * 100 + "%"}
+                  height={1}
+                />
+                <Box
+                  backgroundColor={gameTheme.palette.light || "white"}
+                  width={(1 - currentHealth / maxHealth) * 100 + "%"}
+                  height={1}
+                />
+              </Box>
             </Box>
             <Box
               display="flex"

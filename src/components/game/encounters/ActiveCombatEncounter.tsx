@@ -290,7 +290,6 @@ export const ActiveCombatEncounter = ({
               backgroundColor={gameTheme.palette.dark}
               display="flex"
               flexDirection="column"
-              width={"100%"}
               alignItems="center"
               gap={1}
             >

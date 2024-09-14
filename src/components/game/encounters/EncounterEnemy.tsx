@@ -130,6 +130,48 @@ export const EncounterEnemy = ({ enemy }: EncounterEnemyProps) => {
       <EnemyCanvasBox isDamaged={isDamaged}>
         <EnemyCanvas src="assets/game/skeleton2.png" isDamaged={isDamaged} />
       </EnemyCanvasBox>
+      <Box
+        position="absolute"
+        sx={{
+          border: `2px solid ${gameTheme.palette.light}`,
+          px: 1,
+          pt: 0.5,
+          pb: 1,
+        }}
+        backgroundColor={gameTheme.palette.dark}
+        top={0}
+        left={0}
+        zIndex={5}
+        flexDirection="column"
+        display="flex"
+        alignItems="center"
+      >
+        <Typography
+          variant="game"
+          color={gameTheme.palette.light || "white"}
+          fontSize={20}
+        >
+          {enemy.name}
+        </Typography>
+        <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          height={10}
+          width="100%"
+        >
+          <Box
+            backgroundColor={gameTheme.palette.red || "red"}
+            width={(enemy.hp / enemy.maxHp) * 100 + "%"}
+            height={1}
+          />
+          <Box
+            backgroundColor={gameTheme.palette.light || "white"}
+            width={(1 - enemy.hp / enemy.maxHp) * 100 + "%"}
+            height={1}
+          />
+        </Box>
+      </Box>
     </Box>
   );
 };

@@ -5,7 +5,7 @@ import { DiceType } from "../dice";
 
 export const encounters: Encounter[] = [
   {
-    name: "Skeleton Warrior",
+    name: "Skeletal Ambush",
     description: "A shambling remnant of some unlucky soldier.",
     difficulty: 1,
     rewards: [{ type: RewardType.Coin, value: 10 }],
@@ -15,7 +15,7 @@ export const encounters: Encounter[] = [
         id: v4(),
         name: "Skeleton Warrior",
         hp: 100,
-        maxHp: 10,
+        maxHp: 100,
         defense: 4,
         morale: 5,
         options: [

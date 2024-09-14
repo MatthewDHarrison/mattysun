@@ -104,6 +104,9 @@ export const CharacterCreation = ({
   }, [characterState]);
 
   useEffect(() => {
+    if (character) {
+      setCharacterState(character);
+    }
     if (character?.items.length && character?.items.length > 0) {
       updateGameState({ location: "intro" });
     }

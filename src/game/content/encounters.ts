@@ -13,8 +13,8 @@ export const encounters: Encounter[] = [
       {
         id: v4(),
         name: "Skeleton Warrior",
-        hp: 50,
-        maxHp: 50,
+        hp: 10,
+        maxHp: 10,
         defense: 4,
         morale: 5,
         options: [
@@ -22,7 +22,7 @@ export const encounters: Encounter[] = [
             description: "The skeleton swings his bloody axe.",
             onSuccess: [],
             stat: "toughness",
-            difficulty: 40,
+            difficulty: 4,
             onFail: [{ type: EffectType.Health, target: "self", value: 1 }],
           },
         ],

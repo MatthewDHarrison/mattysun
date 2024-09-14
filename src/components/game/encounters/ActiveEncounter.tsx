@@ -34,6 +34,7 @@ import { ActiveCombatEncounter } from "./ActiveCombatEncounter";
 
 interface IEncounterProps {
   encounter: Encounter;
+  character: ICharacter;
   setCharacter: React.Dispatch<
     React.SetStateAction<ICharacter | null | undefined>
   >;
@@ -54,15 +55,21 @@ export const modalStyle = {
 
 export const ActiveEncounter = ({
   encounter,
+  character,
   setCharacter,
 }: IEncounterProps) => {
-  const { character } = useCharacter();
   if (!character) {
     return null;
   }
-  const { encounterState, startEncounter, endEncounter, doOption } =
-    useEncounterState();
+  const {
+    encounterState,
+    startEncounter,
+    setEncounterState,
+    endEncounter,
+    doOption,
+  } = useEncounterState();
   const [theirTurn, setTheirTurn] = React.useState(false);
+  const { equippedItems, setEquippedItems } = useEquippedItems(character);
 
   const [hpDiff, setHpDiff] = React.useState<number | null>(null);
   const [currHp, setCurrHp] = React.useState<number>(character.hp);
@@ -98,108 +105,125 @@ export const ActiveEncounter = ({
     return (
       <ActiveCombatEncounter
         combatEncounter={encounter as ICombatEncounter}
+        character={character}
         setCharacter={setCharacter}
       />
     );
   }
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      position="relative"
-      justifyContent="space-between"
-      height="100%"
-      zIndex={1}
-      width={1200}
-    >
-      <Box margin={4}>
-        <Typography variant="game" fontSize={64}>
-          {encounterState.encounter.name}
-        </Typography>
-      </Box>
+    <>
+      <Overlay
+        character={character}
+        encounterState={encounterState}
+        setEncounterState={setEncounterState}
+        setCharacter={setCharacter}
+        equippedItems={equippedItems}
+        setEquippedItems={setEquippedItems}
+      />
       <Box
         display="flex"
         flexDirection="column"
         alignItems="center"
-        padding={5}
-        width={1000}
+        position="relative"
+        justifyContent="space-between"
+        height="100%"
         zIndex={1}
-        margin={8}
+        width={1200}
       >
+        <Box margin={4}>
+          <Typography variant="game" fontSize={64}>
+            {encounterState.encounter.name}
+          </Typography>
+        </Box>
         <Box
           display="flex"
           flexDirection="column"
-          justifyContent="space-evenly"
-          marginTop={4}
-          width="100%"
-          gap={2}
+          alignItems="center"
+          padding={5}
+          width={1000}
+          zIndex={1}
+          margin={8}
         >
-          {!theirTurn &&
-            Array.from(
-              { length: Math.ceil(options.length / 2) },
-              (_, idx) => idx,
-            ).map((_, index) => (
-              <Box
-                key={`option_row_${index}`}
-                padding={1}
-                display="flex"
-                flexDirection="row"
-                width="100%"
-                alignItems="center"
-                justifyContent="space-evenly"
-                gap={3}
-              >
-                {options.slice(index * 2, index * 2 + 2).map((option, idx) => (
-                  <Box
-                    key={`option_${index}_${idx}`}
-                    padding={1}
-                    sx={{
-                      border: `2px solid ${gameTheme.palette.light}`,
-                      cursor: "pointer",
-                    }}
-                    backgroundColor={gameTheme.palette.dark}
-                    display="flex"
-                    flexDirection="column"
-                    width={"100%"}
-                    alignItems="center"
-                    gap={1}
-                    onClick={() => {
-                      doOption(option, character);
-                      setTimeout(() => {
-                        setTheirTurn(true);
-                      }, 1000);
-                    }}
-                  >
-                    <Typography alignSelf="center" variant="game" fontSize={28}>
-                      {option.description}
-                      {`${option.stat && ` (${abbreviateStat(option.stat)})`}`}
-                    </Typography>
-                    {option.stat && option.difficulty && (
-                      <Typography
-                        alignSelf="center"
-                        variant="game"
-                        fontSize={20}
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="space-evenly"
+            marginTop={4}
+            width="100%"
+            gap={2}
+          >
+            {!theirTurn &&
+              Array.from(
+                { length: Math.ceil(options.length / 2) },
+                (_, idx) => idx,
+              ).map((_, index) => (
+                <Box
+                  key={`option_row_${index}`}
+                  padding={1}
+                  display="flex"
+                  flexDirection="row"
+                  width="100%"
+                  alignItems="center"
+                  justifyContent="space-evenly"
+                  gap={3}
+                >
+                  {options
+                    .slice(index * 2, index * 2 + 2)
+                    .map((option, idx) => (
+                      <Box
+                        key={`option_${index}_${idx}`}
+                        padding={1}
+                        sx={{
+                          border: `2px solid ${gameTheme.palette.light}`,
+                          cursor: "pointer",
+                        }}
+                        backgroundColor={gameTheme.palette.dark}
+                        display="flex"
+                        flexDirection="column"
+                        width={"100%"}
+                        alignItems="center"
+                        gap={1}
+                        onClick={() => {
+                          doOption(option, character);
+                          setTimeout(() => {
+                            setTheirTurn(true);
+                          }, 1000);
+                        }}
                       >
-                        {(
-                          getSuccessChance(
-                            character.stats[option.stat],
-                            option.difficulty,
-                          ) * 100
-                        ).toFixed(0)}
-                        %
-                      </Typography>
-                    )}
-                  </Box>
-                ))}
-              </Box>
-            ))}
+                        <Typography
+                          alignSelf="center"
+                          variant="game"
+                          fontSize={28}
+                        >
+                          {option.description}
+                          {`${option.stat && ` (${abbreviateStat(option.stat)})`}`}
+                        </Typography>
+                        {option.stat && option.difficulty && (
+                          <Typography
+                            alignSelf="center"
+                            variant="game"
+                            fontSize={20}
+                          >
+                            {(
+                              getSuccessChance(
+                                character.stats[option.stat],
+                                option.difficulty,
+                              ) * 100
+                            ).toFixed(0)}
+                            %
+                          </Typography>
+                        )}
+                      </Box>
+                    ))}
+                </Box>
+              ))}
+          </Box>
+          <EncounterEndModal
+            encounterState={encounterState}
+            onClose={() => endEncounter(setCharacter)}
+          />
         </Box>
-        <EncounterEndModal
-          encounterState={encounterState}
-          onClose={() => endEncounter(setCharacter)}
-        />
       </Box>
-    </Box>
+    </>
   );
 };

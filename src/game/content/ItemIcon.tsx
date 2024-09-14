@@ -1,6 +1,7 @@
 import { Item, ItemType, IWeapon } from "../general";
 import * as React from "react";
 import { SvgIcon } from "@mui/material";
+import { gameTheme } from "../GameTheme";
 
 interface ItemIconProps {
   item: Item;
@@ -22,7 +23,7 @@ export const ItemIcon = ({ item, sx }: ItemIconProps) => {
           >
             <g
               transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
-              fill="#ffffff"
+              fill={gameTheme.palette.light || "white "}
               stroke="none"
             >
               <path
@@ -71,7 +72,7 @@ export const ItemIcon = ({ item, sx }: ItemIconProps) => {
         >
           <g
             transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
-            fill="#ffffff"
+            fill={gameTheme.palette.light || "white "}
             stroke="none"
           >
             <path
@@ -145,7 +146,7 @@ c-179 -392 -600 -1295 -605 -1301 -8 -8 -163 52 -157 62 1 3 146 315 322 694
         >
           <g
             transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
-            fill="#ffffff"
+            fill={gameTheme.palette.light || "white "}
             stroke="none"
           >
             <path
@@ -214,7 +215,7 @@ l100 49 150 -151 c83 -83 143 -148 133 -145 -9 3 -70 11 -136 17 -271 26 -570
         >
           <g
             transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
-            fill="#ffffff"
+            fill={gameTheme.palette.light || "white "}
             stroke="none"
           >
             <path

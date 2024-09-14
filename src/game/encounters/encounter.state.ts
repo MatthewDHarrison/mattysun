@@ -26,7 +26,8 @@ export const applyEffectToEncounter = (
 ) => {
   console.log("Applying effect", effect);
   const totalValue =
-    effect.value || 0 + (effect.dice ? rollDice(effect.dice) : 0);
+    effect.value ||
+    0 + (effect.dice ? rollDice(effect.dice) : 0) * (effect.sign || -1);
 
   if (encounter.type === EncounterType.Combat) {
     const combatEncounter = encounter as ICombatEncounter;
@@ -36,7 +37,7 @@ export const applyEffectToEncounter = (
       }
       console.log("Applying effect to self", effect, totalValue);
       if (effect.type === EffectType.Health) {
-        const newHp = character!.hp - totalValue;
+        const newHp = character!.hp + totalValue;
         character!.hp = newHp;
         if (setCharacter) {
           setCharacter({
@@ -56,7 +57,7 @@ export const applyEffectToEncounter = (
     if (effect.target === "enemies") {
       if (effect.type === EffectType.Health) {
         const newEnemies = combatEncounter.enemies.map((enemy) => {
-          enemy.hp -= totalValue;
+          enemy.hp += totalValue;
           if (enemy.hp <= 0) {
             return null;
           }
@@ -83,7 +84,7 @@ export const applyEffectToEncounter = (
       return;
     }
     if (effect.type === EffectType.Health) {
-      enemy.hp -= totalValue;
+      enemy.hp += totalValue;
       if (enemy.hp <= 0) {
         combatEncounter.enemies = combatEncounter.enemies.filter(
           (e) => e.id !== enemy.id,
@@ -192,5 +193,6 @@ export const useEncounterState = () => {
     startEncounter,
     endEncounter,
     doOption,
+    setEncounterState,
   };
 };

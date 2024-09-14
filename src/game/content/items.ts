@@ -32,14 +32,14 @@ export const startingGear: Item[] = [
     description: "Not sure what it's made of, but it's protein.",
     value: 1,
     type: ItemType.Consumable,
-    effect: { type: EffectType.Health, value: 1, target: "self" },
+    effect: { type: EffectType.Health, value: 8, target: "self", sign: 1 },
   },
   {
     name: "Bruised Apple",
     description: "It's seen better days. So have you.",
     value: 1,
     type: ItemType.Consumable,
-    effect: { type: EffectType.Health, value: 1, target: "self" },
+    effect: { type: EffectType.Health, value: 4, target: "self", sign: 1 },
   },
 ];
 
@@ -147,7 +147,7 @@ export const scrolls: IScroll[] = [
     value: 5,
     type: ItemType.Scroll,
     spell: "heal",
-    effect: { type: EffectType.Health, value: 3, target: "self" },
+    effect: { type: EffectType.Health, value: 15, target: "self", sign: 1 },
   },
   {
     name: "Become Shadow (scroll)",

@@ -2,6 +2,7 @@ import { Box, Typography } from "@mui/material";
 import { IItem, Item } from "../../../game/general";
 import * as React from "react";
 import { ItemIcon } from "../../../game/content/ItemIcon";
+import { gameTheme } from "../../../game/GameTheme";
 
 interface IStartingItemProps {
   item: Item;
@@ -23,14 +24,18 @@ export const StartingItem = ({
       width="33.33%"
       gap={1}
       height="200px"
-      border={selected ? "2px solid white" : "1px solid white"}
+      border={
+        selected
+          ? `2px solid ${gameTheme.palette.light || "white"}`
+          : `1px solid ${gameTheme.palette.light || "white"}`
+      }
       padding={2}
       sx={{
         cursor: "pointer",
-        backgroundColor: selected ? "black" : "",
+        backgroundColor: selected ? gameTheme.palette.dark : "",
         "&:hover": {
-          backgroundColor: "black",
-          color: "white",
+          backgroundColor: gameTheme.palette.dark || "black",
+          color: gameTheme.palette.light || "white",
           boxShadow: 4,
         },
       }}

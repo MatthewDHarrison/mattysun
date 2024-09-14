@@ -67,6 +67,7 @@ export interface IEffect {
   type: EffectType;
   value?: number;
   dice?: IDice;
+  sign?: number;
   status?: StatusType;
   target: string | "self" | "enemies" | "all";
 }

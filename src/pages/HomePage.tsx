@@ -56,16 +56,13 @@ export const HomePage = () => {
         display="flex"
         alignItems="end"
         justifyContent="center"
-        padding={{ b: 3 }}
       >
         <Box zIndex={1} position="absolute" height="100vh" width="100%">
           <TwoPMScene width={width} />
         </Box>
         <Box
           zIndex={3}
-          sx={{ mb: width < 800 ? 10 : 1 }}
           textAlign="center"
-          gap={3}
           display="flex"
           flexDirection="column"
         >
@@ -78,49 +75,62 @@ export const HomePage = () => {
             <IconButton onClick={handleToggle} sx={{ color: "#fff" }}>
               {expanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}
             </IconButton>
-            <Box display="inline-flex">
-              {LINKS.map((link, index) => (
-                <Box display="inline-flex" key={link.name}>
-                  <Box
-                    display="inline-flex"
-                    gap={1}
-                    onClick={() => (window.location.href = link.href)}
-                    justifyItems="center"
-                  >
-                    {link.icon}
+            <Box
+              display="flex"
+              backgroundColor={"#000000aa"}
+              sx={{ p: 2, pb: width < 800 ? 10 : 1 }}
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+              gap={2}
+            >
+              <Box display="inline-flex">
+                {LINKS.map((link, index) => (
+                  <Box display="inline-flex" key={link.name}>
+                    <Box
+                      display="inline-flex"
+                      gap={1}
+                      onClick={() => (window.location.href = link.href)}
+                      justifyItems="center"
+                    >
+                      {link.icon}
 
-                    {width > 800 && (
-                      <Link
-                        color="#ff0000ff"
-                        key={link.name}
-                        href={link.href}
-                        underline="hover"
-                        sx={{ display: "block" }}
-                        className="sixtyfour-red"
-                      >
-                        {link.name}
-                      </Link>
+                      {width > 800 && (
+                        <Link
+                          color="#ff0000ff"
+                          key={link.name}
+                          href={link.href}
+                          underline="hover"
+                          sx={{ display: "block" }}
+                          className="sixtyfour-red"
+                        >
+                          {link.name}
+                        </Link>
+                      )}
+                    </Box>
+
+                    {index < LINKS.length - 1 && (
+                      <Box height="100%" sx={{ width: "2px", mx: 3 }} />
                     )}
                   </Box>
+                ))}
+              </Box>
 
-                  {index < LINKS.length - 1 && (
-                    <Box height="100%" sx={{ width: "2px", mx: 3 }} />
-                  )}
-                </Box>
-              ))}
+              <Box width="100%">
+                <Collapse in={expanded} timeout="auto">
+                  <iframe
+                    data-testid="embed-iframe"
+                    src="https://open.spotify.com/embed/track/5UjGGvOWnGhIr6ACu6jLx1?utm_source=generator"
+                    width="100%"
+                    height="120"
+                    frameBorder="0"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                  ></iframe>
+                </Collapse>
+              </Box>
             </Box>
           </Box>
-          <Collapse in={expanded} timeout="auto">
-            <iframe
-              data-testid="embed-iframe"
-              src="https://open.spotify.com/embed/track/5UjGGvOWnGhIr6ACu6jLx1?utm_source=generator"
-              width="100%"
-              height="120"
-              frameBorder="0"
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              loading="lazy"
-            ></iframe>
-          </Collapse>
         </Box>
       </Box>
     </>

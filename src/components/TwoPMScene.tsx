@@ -1,10 +1,10 @@
 import React from "react";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
-import { MattyText } from "./MattyText";
 import { EffectComposer, Noise, Vignette } from "@react-three/postprocessing";
 import { DunceModel } from "./DunceModel";
 import { TwoPMText } from "./TwoPMText";
+import { TwoPMTextMobile } from "./TwoPMTextMobile";
 
 interface ITwoPMSceneProps {
   width: number;
@@ -18,7 +18,7 @@ export const TwoPMScene = ({ width }: ITwoPMSceneProps) => {
       <Suspense fallback={"Loading"}>
         <DunceModel width={width} />
       </Suspense>
-      <TwoPMText />
+      {width > 800 ? <TwoPMText /> : <TwoPMTextMobile />}
       <EffectComposer>
         {/* Noise adds the grainy effect */}
         <Noise opacity={0.2} />

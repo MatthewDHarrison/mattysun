@@ -17,7 +17,7 @@ interface ISunCloudsProps {
 }
 
 export const DunceModel = ({ width }: ISunCloudsProps) => {
-  const cameraStartPos = width < 800 ? 30 : 15;
+  const cameraStartPos = width < 800 ? 20 : 15;
   const { camera } = useThree();
 
   const [movement, setMovement] = useState(0);

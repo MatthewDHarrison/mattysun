@@ -5,11 +5,13 @@ export const theme = createTheme({
   typography: {
     allVariants: {
       color: "white",
+      fontWeight: 400,
     },
+    fontFamily: "Sixtyfour, sans-serif",
   },
   palette: {
     background: {
-      default: "#0196D9",
+      default: "#000000",
     },
     primary: {
       main: "#556cd6",
@@ -20,5 +22,6 @@ export const theme = createTheme({
     error: {
       main: red.A400,
     },
+    text: { primary: "#ffffff" },
   },
 });

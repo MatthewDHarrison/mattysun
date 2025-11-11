@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, Link } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Collapse, IconButton, Link } from "@mui/material";
 import { Scene } from "../components/SunClouds";
 import {
   Instagram,
@@ -8,6 +8,10 @@ import {
   GraphicEq,
   MusicNote,
 } from "@mui/icons-material";
+
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { TwoPMScene } from "../components/TwoPMScene";
 
 const LINKS = [
   {
@@ -38,6 +42,11 @@ const LINKS = [
 ];
 export const HomePage = () => {
   const width = window.innerWidth;
+  const [expanded, setExpanded] = useState(false);
+
+  const handleToggle = () => {
+    setExpanded((prev) => !prev);
+  };
   return (
     <>
       <Box
@@ -47,43 +56,81 @@ export const HomePage = () => {
         display="flex"
         alignItems="end"
         justifyContent="center"
-        padding={{ b: 3 }}
       >
         <Box zIndex={1} position="absolute" height="100vh" width="100%">
-          <Scene width={width} />
+          <TwoPMScene width={width} />
         </Box>
-        <Box zIndex={3} display="inline-flex" sx={{ mb: width < 800 ? 10 : 3 }}>
-          {LINKS.map((link, index) => (
-            <Box display="inline-flex" key={link.name}>
-              <Box
-                display="inline-flex"
-                gap={1}
-                onClick={() => (window.location.href = link.href)}
-                justifyItems="center"
-              >
-                {link.icon}
+        <Box
+          zIndex={3}
+          textAlign="center"
+          display="flex"
+          flexDirection="column"
+        >
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            flexDirection="column"
+          >
+            <IconButton onClick={handleToggle} sx={{ color: "#fff" }}>
+              {expanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+            </IconButton>
+            <Box
+              display="flex"
+              backgroundColor={"#000000aa"}
+              sx={{ p: 2, pb: width < 800 ? 10 : 1 }}
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+              gap={2}
+            >
+              <Box display="inline-flex">
+                {LINKS.map((link, index) => (
+                  <Box display="inline-flex" key={link.name}>
+                    <Box
+                      display="inline-flex"
+                      gap={1}
+                      onClick={() => (window.location.href = link.href)}
+                      justifyItems="center"
+                    >
+                      {link.icon}
 
-                {width > 800 && (
-                  <Link
-                    color="#fff"
-                    key={link.name}
-                    href={link.href}
-                    underline="hover"
-                    sx={{ display: "block" }}
-                  >
-                    {link.name}
-                  </Link>
-                )}
+                      {width > 800 && (
+                        <Link
+                          color="#ff0000ff"
+                          key={link.name}
+                          href={link.href}
+                          underline="hover"
+                          sx={{ display: "block" }}
+                          className="sixtyfour-red"
+                        >
+                          {link.name}
+                        </Link>
+                      )}
+                    </Box>
+
+                    {index < LINKS.length - 1 && (
+                      <Box height="100%" sx={{ width: "2px", mx: 3 }} />
+                    )}
+                  </Box>
+                ))}
               </Box>
 
-              {index < LINKS.length - 1 && (
-                <Box
-                  height="100%"
-                  sx={{ width: "2px", mx: 3, bgcolor: "#fff" }}
-                />
-              )}
+              <Box width="100%">
+                <Collapse in={expanded} timeout="auto">
+                  <iframe
+                    data-testid="embed-iframe"
+                    src="https://open.spotify.com/embed/track/5UjGGvOWnGhIr6ACu6jLx1?utm_source=generator"
+                    width="100%"
+                    height="120"
+                    frameBorder="0"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                  ></iframe>
+                </Collapse>
+              </Box>
             </Box>
-          ))}
+          </Box>
         </Box>
       </Box>
     </>
